@@ -1,0 +1,48 @@
+<div class="profile-shell">
+  <section class="summary-card">
+    <div class="avatar">J</div>
+    <div>
+      <div class="name">{{ displayName }}</div>
+      <div class="email">{{ email }}</div>
+      <div class="status">{{ status }}</div>
+    </div>
+    <button type="button" class="ghost">Change avatar</button>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Profile</h2>
+      <button type="button" class="primary" (click)="save()">Save changes</button>
+    </div>
+    <div class="grid">
+      <label class="field">
+        <span>Display name</span>
+        <input type="text" [(ngModel)]="displayName" />
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" [(ngModel)]="email" />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <input type="text" [(ngModel)]="status" />
+      </label>
+      <label class="field full">
+        <span>Bio</span>
+        <textarea rows="3" [(ngModel)]="bio"></textarea>
+      </label>
+      <label class="field">
+        <span>Time zone</span>
+        <input type="text" [(ngModel)]="timezone" />
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Security</h2>
+      <button type="button" class="ghost">Change password</button>
+    </div>
+    <p class="muted">Set a strong password and enable 2FA (coming soon).</p>
+  </section>
+</div>

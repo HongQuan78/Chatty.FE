@@ -23,7 +23,6 @@ export class LoginComponent {
     if (!this.email || !this.password) {
       return;
     }
-    // Dummy submit to mimic loading state.
     this.submitting = true;
     this.store
       .dispatch(new Login({ name: this.email, email: this.email }))

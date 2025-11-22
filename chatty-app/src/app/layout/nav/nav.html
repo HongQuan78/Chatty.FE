@@ -4,15 +4,14 @@
     <span class="brand-name">Chatty</span>
   </div>
 
-  <div class="nav-actions" *ngIf="isAuthenticated$ | async; else guest">
-    <button type="button" class="ghost">Profile</button>
-    <button type="button" class="primary">New Chat</button>
+  @if (isAuthenticated$ | async) {
+  <div class="nav-actions">
+    <button type="button" class="ghost" (click)="profile()">Profile</button>
     <button type="button" class="ghost" (click)="logout()">Logout</button>
   </div>
-
-  <ng-template #guest>
-    <div class="nav-actions">
-      <a routerLink="/login" class="link-btn primary">Login</a>
-    </div>
-  </ng-template>
+  } @else {
+  <div class="nav-actions">
+    <a routerLink="/login" class="link-btn primary">Login</a>
+  </div>
+  }
 </nav>
