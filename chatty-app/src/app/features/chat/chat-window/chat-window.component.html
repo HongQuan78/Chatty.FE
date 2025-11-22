@@ -1,0 +1,22 @@
+<section class="window">
+  <header class="header">
+    <div class="info">
+      <div class="avatar">{{ title[0] || '?' }}</div>
+      <div>
+        <div class="name">{{ title }}</div>
+        <div class="status">Online</div>
+      </div>
+    </div>
+    <button class="menu" type="button">⋮</button>
+  </header>
+
+  <div class="messages" #scroller>
+    <div
+      *ngFor="let m of messages"
+      class="bubble"
+      [class.me]="m.author === 'me'">
+      <div class="text">{{ m.text }}</div>
+      <span class="time">{{ m.time }}</span>
+    </div>
+  </div>
+</section>

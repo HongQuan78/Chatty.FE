@@ -1,0 +1,17 @@
+<div class="auth-shell">
+  <div class="card">
+    <h1>Welcome back</h1>
+    <p class="muted">Sign in to continue</p>
+
+    <form (ngSubmit)="submit()">
+      <label>Email</label>
+      <input type="email" name="email" [(ngModel)]="email" required />
+
+      <label>Password</label>
+      <input type="password" name="password" [(ngModel)]="password" required />
+
+      <button type="submit" [disabled]="submitting">Sign in</button>
+      <a routerLink="/register" class="link">Create account</a>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+.section {
+  display: grid;
+  gap: 10px;
+}
+
+h3 {
+  margin: 0 0 4px;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 13px;
+  margin: 4px 0 0;
+}

@@ -1,0 +1,13 @@
+<div class="settings-shell">
+  <nav class="tabs">
+    <button [class.active]="tab() === 'profile'" (click)="setTab('profile')" type="button">Profile</button>
+    <button [class.active]="tab() === 'privacy'" (click)="setTab('privacy')" type="button">Privacy</button>
+    <button [class.active]="tab() === 'theme'" (click)="setTab('theme')" type="button">Theme</button>
+  </nav>
+
+  <section class="panel">
+    <app-profile-settings *ngIf="tab() === 'profile'"></app-profile-settings>
+    <app-privacy-settings *ngIf="tab() === 'privacy'"></app-privacy-settings>
+    <app-theme-settings *ngIf="tab() === 'theme'"></app-theme-settings>
+  </section>
+</div>

@@ -1,0 +1,20 @@
+<div class="auth-shell">
+  <div class="card">
+    <h1>Create account</h1>
+    <p class="muted">Join Chatty to start messaging</p>
+
+    <form (ngSubmit)="submit()">
+      <label>Name</label>
+      <input type="text" name="name" [(ngModel)]="name" required />
+
+      <label>Email</label>
+      <input type="email" name="email" [(ngModel)]="email" required />
+
+      <label>Password</label>
+      <input type="password" name="password" [(ngModel)]="password" required />
+
+      <button type="submit" [disabled]="submitting">Sign up</button>
+      <a routerLink="/login" class="link">Back to login</a>
+    </form>
+  </div>
+</div>

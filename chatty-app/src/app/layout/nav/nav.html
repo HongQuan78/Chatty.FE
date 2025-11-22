@@ -1,0 +1,18 @@
+<nav class="nav">
+  <div class="brand">
+    <span class="brand-mark">C</span>
+    <span class="brand-name">Chatty</span>
+  </div>
+
+  <div class="nav-actions" *ngIf="isAuthenticated$ | async; else guest">
+    <button type="button" class="ghost">Profile</button>
+    <button type="button" class="primary">New Chat</button>
+    <button type="button" class="ghost" (click)="logout()">Logout</button>
+  </div>
+
+  <ng-template #guest>
+    <div class="nav-actions">
+      <a routerLink="/login" class="link-btn primary">Login</a>
+    </div>
+  </ng-template>
+</nav>

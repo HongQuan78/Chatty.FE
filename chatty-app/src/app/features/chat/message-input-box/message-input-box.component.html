@@ -1,0 +1,10 @@
+<div class="input-shell">
+  <button class="icon" type="button">😊</button>
+  <button class="icon" type="button">📎</button>
+  <input
+    type="text"
+    placeholder="Message"
+    [(ngModel)]="draft"
+    (keyup.enter)="emit()" />
+  <button class="send" type="button" (click)="emit()">Send</button>
+</div>

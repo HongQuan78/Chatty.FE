@@ -1,0 +1,28 @@
+<div class="sidebar-shell">
+  <div class="top">
+    <div class="avatar">U</div>
+    <button class="icon" type="button">⚙️</button>
+  </div>
+
+  <input
+    class="search"
+    type="text"
+    placeholder="Search"
+    [(ngModel)]="query" />
+
+  <div class="list">
+    <button
+      class="item"
+      *ngFor="let c of filteredConversations()"
+      [class.active]="c.name === active"
+      (click)="select.emit(c.name)"
+      type="button">
+      <div class="avatar small">{{ c.name[0] }}</div>
+      <div class="meta">
+        <div class="name">{{ c.name }}</div>
+        <div class="last">{{ c.last }}</div>
+      </div>
+      <span class="time">{{ c.time }}</span>
+    </button>
+  </div>
+</div>
