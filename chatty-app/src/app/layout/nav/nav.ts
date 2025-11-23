@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { AuthState } from '../../state/auth.state';
@@ -9,7 +8,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-nav',
   standalone: true,
-  imports: [CommonModule, RouterLink, AsyncPipe],
+  imports: [CommonModule, AsyncPipe],
   templateUrl: './nav.html',
   styleUrl: './nav.scss',
 })

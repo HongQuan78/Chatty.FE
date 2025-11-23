@@ -13,14 +13,10 @@ type Conversation = { name: string; last: string; time: string };
 })
 export class SidebarConversationsComponent {
   @Input() active = '';
+  @Input() conversations: Conversation[] = [];
   @Output() select = new EventEmitter<string>();
 
   query = '';
-  conversations: Conversation[] = [
-    { name: 'John Doe', last: 'See you soon', time: '09:45' },
-    { name: 'Team Chat', last: 'Deploy at 5?', time: '09:30' },
-    { name: 'Alice', last: 'On my way!', time: '09:12' },
-  ];
 
   filteredConversations() {
     const q = this.query.toLowerCase();

@@ -1,22 +1,37 @@
 <section class="window">
-  <header class="header">
-    <div class="info">
+  <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50">
+    <div class="flex items-center gap-4">
       <div class="avatar">{{ title[0] || '?' }}</div>
-      <div>
-        <div class="name">{{ title }}</div>
-        <div class="status">Online</div>
+      <div class="flex flex-col">
+        <h2 class="text-gray-900 dark:text-white text-base font-bold leading-tight">{{ title || 'Conversation' }}</h2>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">Online</p>
       </div>
     </div>
-    <button class="menu" type="button">⋮</button>
+    <div class="flex items-center gap-2">
+      <button class="icon" type="button"><span class="material-symbols-outlined">call</span></button>
+      <button class="icon" type="button"><span class="material-symbols-outlined">videocam</span></button>
+      <button class="icon" type="button"><span class="material-symbols-outlined">more_vert</span></button>
+    </div>
   </header>
 
-  <div class="messages" #scroller>
+  <div class="messages flex-1 p-4 md:p-6" #scroller>
     <div
-      *ngFor="let m of messages"
-      class="bubble"
-      [class.me]="m.author === 'me'">
-      <div class="text">{{ m.text }}</div>
-      <span class="time">{{ m.time }}</span>
+      *ngIf="messages.length; else empty"
+      class="flex flex-col gap-3">
+      <div
+        *ngFor="let m of messages"
+        class="bubble"
+        [class.me]="m.author === 'me'">
+        <div class="text">{{ m.text }}</div>
+        <span class="time">{{ m.time }}</span>
+      </div>
     </div>
+    <ng-template #empty>
+      <div class="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
+        <span class="material-symbols-outlined text-6xl mb-4">chat</span>
+        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Select a conversation</h3>
+        <p class="mt-1 max-w-sm">Choose from your conversations or start a new one to begin chatting.</p>
+      </div>
+    </ng-template>
   </div>
 </section>
