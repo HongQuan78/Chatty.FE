@@ -1,17 +1,15 @@
+@if (isAuthenticated$ | async) {
 <nav class="nav">
   <div class="brand">
-    <span class="brand-mark">C</span>
     <span class="brand-name">Chatty</span>
   </div>
 
-  @if (isAuthenticated$ | async) {
+
   <div class="nav-actions">
     <button type="button" class="ghost" (click)="profile()">Profile</button>
     <button type="button" class="ghost" (click)="logout()">Logout</button>
   </div>
-  } @else {
-  <div class="nav-actions">
-    <a routerLink="/login" class="link-btn primary">Login</a>
-  </div>
-  }
+
 </nav>
+} @else {
+}

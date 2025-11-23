@@ -1,20 +1,93 @@
-<div class="auth-shell">
-  <div class="card">
-    <h1>Create account</h1>
-    <p class="muted">Join Chatty to start messaging</p>
-
-    <form (ngSubmit)="submit()">
-      <label>Name</label>
-      <input type="text" name="name" [(ngModel)]="name" required />
-
-      <label>Email</label>
-      <input type="email" name="email" [(ngModel)]="email" required />
-
-      <label>Password</label>
-      <input type="password" name="password" [(ngModel)]="password" required />
-
-      <button type="submit" [disabled]="submitting">Sign up</button>
-      <a routerLink="/login" class="link">Back to login</a>
+<app-auth-layout>
+  <div class="w-full max-w-md space-y-8">
+    <!-- Header -->
+    <div>
+      <div class="flex flex-wrap justify-between gap-3">
+        <div class="flex w-full flex-col gap-1 text-center">
+          <p class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Create Account
+          </p>
+          <p class="text-[#60758a] dark:text-gray-400 text-base font-normal leading-normal">Join and start collaborating
+            today</p>
+        </div>
+      </div>
+    </div>
+    <!-- Segmented Buttons -->
+    <div class="flex py-3">
+      <div
+        class="flex h-12 flex-1 items-center justify-center rounded-lg bg-background-light dark:bg-background-dark p-1">
+        <label
+          class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:bg-primary/10 dark:has-[:checked]:text-primary text-[#60758a] dark:text-gray-400 text-sm font-medium leading-normal transition-all duration-200">
+          <span>Login</span>
+          <input class="invisible w-0" name="auth-toggle" type="radio" value="Login" (change)="goLogin()" />
+        </label>
+        <label
+          class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:bg-primary/10 dark:has-[:checked]:text-primary text-[#60758a] dark:text-gray-400 text-sm font-medium leading-normal transition-all duration-200">
+          <span class="whitespace-nowrap">Sign Up</span>
+          <input class="invisible w-0" name="auth-toggle" type="radio" value="Sign Up" checked />
+        </label>
+      </div>
+    </div>
+    <!-- Form -->
+    <form class="space-y-6" (ngSubmit)="submit()">
+      <!-- Name Field -->
+      <div class="flex flex-wrap items-end gap-4">
+        <label class="flex flex-col min-w-40 flex-1">
+          <p class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal pb-2">Full Name</p>
+          <input
+            class="form-input flex w-full min-w-0 flex-1 rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-background-dark h-12 placeholder:text-[#60758a] p-3 text-base font-normal leading-normal"
+            placeholder="Enter your name" type="text" name="name" [(ngModel)]="name" required />
+        </label>
+      </div>
+      <!-- Email Field -->
+      <div class="flex flex-wrap items-end gap-4">
+        <label class="flex flex-col min-w-40 flex-1">
+          <p class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal pb-2">Email Address</p>
+          <input
+            class="form-input flex w-full min-w-0 flex-1 rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-background-dark h-12 placeholder:text-[#60758a] p-3 text-base font-normal leading-normal"
+            placeholder="Enter your email" type="email" name="email" [(ngModel)]="email" required />
+        </label>
+      </div>
+      <!-- Password Field -->
+      <div class="flex flex-wrap items-end gap-4">
+        <label class="flex flex-col min-w-40 flex-1">
+          <div class="flex justify-between items-center pb-2">
+            <p class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal">Password</p>
+          </div>
+          <div class="relative w-full">
+            <input
+              class="form-input flex w-full min-w-0 flex-1 rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-background-dark h-12 placeholder:text-[#60758a] p-3 pr-10 text-base font-normal leading-normal"
+              placeholder="Enter your password" type="password" name="password" [(ngModel)]="password" required />
+            <button type="button"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-[#60758a] dark:text-gray-400">
+              <span class="material-symbols-outlined text-xl">visibility_off</span>
+            </button>
+          </div>
+        </label>
+      </div>
+      <!-- Confirm Password -->
+      <div class="flex flex-wrap items-end gap-4">
+        <label class="flex flex-col min-w-40 flex-1">
+          <div class="flex justify-between items-center pb-2">
+            <p class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal">Confirm Password</p>
+          </div>
+          <div class="relative w-full">
+            <input
+              class="form-input flex w-full min-w-0 flex-1 rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-background-dark h-12 placeholder:text-[#60758a] p-3 pr-10 text-base font-normal leading-normal"
+              placeholder="Re-enter your password" type="password" name="confirmPassword" [(ngModel)]="confirmPassword"
+              required />
+          </div>
+        </label>
+      </div>
+      <!-- Error -->
+      <p *ngIf="error" class="text-sm text-red-600">{{ error }}</p>
+      <!-- CTA Button -->
+      <div class="py-2">
+        <button type="submit" [disabled]="submitting"
+          class="flex h-12 w-full items-center justify-center rounded-lg bg-primary px-6 text-base font-semibold text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:ring-offset-background-dark transition-colors duration-200">
+          {{ submitting ? 'Signing up...' : 'Sign Up' }}
+        </button>
+      </div>
     </form>
+
   </div>
-</div>
+</app-auth-layout>

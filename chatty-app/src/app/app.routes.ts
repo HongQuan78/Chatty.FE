@@ -9,7 +9,7 @@ import { unsavedChangesGuard } from './core/guards/unsaved-changes.guard';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'chat', component: ChatPageComponent, canActivate: [authGuard] },
+  { path: 'chat', component: ChatPageComponent},
   { path: 'settings', component: SettingsPageComponent, canActivate: [authGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard], canDeactivate: [unsavedChangesGuard] },
   { path: '', pathMatch: 'full', redirectTo: 'login' },

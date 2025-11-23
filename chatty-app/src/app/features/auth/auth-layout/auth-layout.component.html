@@ -1,0 +1,87 @@
+<div class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+    <div class="layout-container flex h-full grow flex-col">
+        <div class="flex flex-1 justify-center">
+            <div class="flex w-full max-w-screen-2xl flex-1 flex-col">
+                <div
+                    class="grid flex-1 grid-cols-1 md:grid-cols-2 md:min-h-[760px] md:max-h-[760px] md:overflow-hidden">
+                    <!-- Left Column -->
+                    <div
+                        class="relative hidden h-full flex-col justify-between overflow-hidden bg-primary/10 p-10 md:flex dark:bg-background-dark">
+                        <div class="absolute inset-0 z-0">
+                            <div class="h-full w-full bg-cover bg-center bg-no-repeat"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBMdsXDK2FaEfClHgJsP64YspsMd1evNB10xKnM4RcpfK7SKor8gCQ4PuHIfZ6hrnW_fLJgY0eTgqLD7i1emZ4_EjHhqboABIjc8hAjOPAxUP8n2dCSFiXVLO1atmRu9D_yuaS05fpoAgutvuG4C7CBl566G51z47eSpVvGkNabOVbVFG1shklI0sGyAwO_E1U9207A5Jn-6tpX_PB8YcpjNA5OybjhhgaweUc5ZCOEaHSl03DnxPC3msIigHE8OUsVvBLourZ3hpGf");'>
+                            </div>
+                            <div class="absolute inset-0 bg-primary/70 dark:bg-background-dark/80"></div>
+                        </div>
+                        <div class="relative z-10 flex flex-col justify-center h-full text-white">
+                            <div class="max-w-md">
+                                <h1 class="text-4xl font-bold leading-tight tracking-tight lg:text-5xl">Your Team,
+                                    Connected.</h1>
+                                <p class="mt-4 text-base font-normal leading-normal text-white/80">
+                                    Collaborate seamlessly, share files instantly, and stay in sync with your team,
+                                    wherever they are.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="relative z-10 text-white">
+                            <a class="flex items-center gap-2 text-xl font-bold" href="#">
+                                <span class="material-symbols-outlined text-3xl">chat_bubble</span>
+                                <span>Chatty</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Right Column -->
+                    <div
+                        class="flex w-full flex-col items-center justify-start bg-white px-4 py-12 sm:px-6 lg:px-8 dark:bg-background-dark/60 md:min-h-[760px] md:max-h-[760px] md:overflow-y-auto">
+                        <div class="w-full max-w-md space-y-8">
+                            <ng-content></ng-content>
+                            <!-- Social Logins -->
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span
+                                        class="bg-white dark:bg-background-dark/60 px-2 text-[#60758a] dark:text-gray-400">Or
+                                        continue with</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button type="button"
+                                    class="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-background-dark/60 px-4 text-sm font-medium text-[#111418] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:ring-offset-background-dark transition-colors duration-200">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 48 48"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M48 24.4C48 22.9 47.9 21.4 47.6 20H24.5V28.4H37.8C37.2 31.4 35.6 33.9 33.1 35.5V41.3H41.5C45.6 37.1 48 31.2 48 24.4Z"
+                                            fill="#4285F4" fill-rule="evenodd"></path>
+                                        <path clip-rule="evenodd"
+                                            d="M24.5 48.1C31.5 48.1 37.4 45.8 41.5 41.3L33.1 35.5C30.8 37.1 27.9 38 24.5 38C17.9 38 12.2 33.7 10.1 27.8H1.5V33.8C5.6 42.4 14.3 48.1 24.5 48.1Z"
+                                            fill="#34A853" fill-rule="evenodd"></path>
+                                        <path clip-rule="evenodd"
+                                            d="M10.1 27.8C9.6 26.3 9.4 24.7 9.4 23.1C9.4 21.5 9.7 19.9 10.1 18.4V12.4H1.5C-0.3 16.1 -0.3 20.3 1.5 24C1.5 24.2 1.5 24.5 1.5 24.7C1.5 28.5 3.3 32 5.6 33.8L10.1 27.8Z"
+                                            fill="#FBBC05" fill-rule="evenodd"></path>
+                                        <path clip-rule="evenodd"
+                                            d="M24.5 10.2C28.3 10.2 31.8 11.6 34.4 14.1L41.7 6.9C37.4 3 31.5 0 24.5 0C14.3 0 5.6 5.7 1.5 14.2L10.1 20.2C12.2 14.3 17.9 10.2 24.5 10.2Z"
+                                            fill="#EA4335" fill-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Google</span>
+                                </button>
+                                <button type="button"
+                                    class="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-background-dark/60 px-4 text-sm font-medium text-[#111418] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:ring-offset-background-dark transition-colors duration-200">
+                                    <svg class="h-5 w-5 text-[#111418] dark:text-white" fill="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M12 0C5.37 0 0 5.37 0 12C0 17.3 3.438 21.8 8.205 23.385C8.805 23.505 9.025 23.115 9.025 22.785C9.025 22.485 9.015 21.63 9.01 20.415C5.67 21.165 4.965 18.795 4.965 18.795C4.41 17.385 3.63 17.055 3.63 17.055C2.52 16.29 3.705 16.305 3.705 16.305C4.935 16.395 5.55 17.565 5.55 17.565C6.66 19.455 8.52 18.885 9.06 18.63C9.18 17.865 9.48 17.355 9.81 17.085C7.155 16.785 4.365 15.765 4.365 11.295C4.365 10.005 4.815 8.955 5.55 8.16C5.43 7.86 5.085 6.81 5.685 5.235C5.685 5.235 6.705 4.905 9.015 6.555C9.99 6.285 11.025 6.15 12.06 6.15C13.095 6.15 14.13 6.285 15.105 6.555C17.415 4.905 18.435 5.235 18.435 5.235C19.035 6.81 18.69 7.86 18.57 8.16C19.305 8.955 19.755 10.005 19.755 11.295C19.755 15.78 16.95 16.785 14.31 17.085C14.715 17.445 15.105 18.15 15.105 19.14C15.105 20.655 15.09 21.885 15.09 22.215C15.09 22.545 15.295 22.95 15.915 22.83C20.58 21.3 24 17.295 24 12C24 5.37 18.63 0 12 0Z"
+                                            fill-rule="evenodd"></path>
+                                    </svg>
+                                    <span>GitHub</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Right Column -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

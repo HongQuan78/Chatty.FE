@@ -9,7 +9,7 @@ export interface CanComponentDeactivate {
 @Injectable({
   providedIn: 'root',
 })
-export class UnsavedChangesGuard implements CanDeactivate<CanComponentDeactivate> {
+export class unsavedChangesGuard implements CanDeactivate<CanComponentDeactivate> {
   canDeactivate(component: CanComponentDeactivate): boolean | Observable<boolean> {
     return component.canDeactivate ? component.canDeactivate() : true;
   }

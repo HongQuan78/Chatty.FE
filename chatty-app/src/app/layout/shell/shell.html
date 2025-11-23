@@ -3,4 +3,7 @@
   <main class="app-main">
     <router-outlet></router-outlet>
   </main>
+  @if ((isAuthenticated$ | async) && chatVisited() && !isOnChatRoute()) {
+    <app-chat-bubble></app-chat-bubble>
+  }
 </div>
