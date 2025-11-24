@@ -1,21 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { Login, Logout } from './auth.actions';
-
-export interface AuthUser {
-  name: string;
-  email: string;
-  token?: string;
-}
-
-export interface AuthStateModel {
-  user: AuthUser | null;
-}
+import { User } from '../core/models/auth/user.model';
+import { AuthStateModel } from '../core/models/auth/auth-state.model';
 
 @State<AuthStateModel>({
   name: 'auth',
   defaults: {
-    user: null
+    user: null,
+    accessToken: null,
+    refreshToken: null,
+    accessTokenExp: null,
+    refreshTokenExp: null,
   }
 })
 @Injectable()
@@ -27,17 +23,29 @@ export class AuthState {
 
   @Selector()
   static isAuthenticated(state: AuthStateModel) {
-    return !!state.user;
+    return !!state.accessToken && !!state.user;
   }
 
   @Action(Login)
   login(ctx: StateContext<AuthStateModel>, action: Login) {
-    const { name, email, token } = action.payload;
-    ctx.setState({ user: { name, email, token } });
+    const { user, accessToken, refreshToken, accessTokenExp, refreshTokenExp } = action.payload;
+    ctx.setState({
+      user,
+      accessToken,
+      refreshToken,
+      accessTokenExp: accessTokenExp ?? null,
+      refreshTokenExp: refreshTokenExp ?? null,
+    });
   }
 
   @Action(Logout)
   logout(ctx: StateContext<AuthStateModel>) {
-    ctx.setState({ user: null });
+    ctx.setState({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      accessTokenExp: null,
+      refreshTokenExp: null,
+    });
   }
 }

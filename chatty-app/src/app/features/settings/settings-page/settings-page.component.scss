@@ -1,33 +1,59 @@
+:host {
+  display: block;
+  --surface: #ffffff;
+  --surface-strong: #f8fafc;
+  --border: #e5e7eb;
+  --text: #0f172a;
+}
+
+:host-context(.theme-dark) {
+  --surface: #0f172a;
+  --surface-strong: #111a2c;
+  --border: #1e293b;
+  --text: #e2e8f0;
+}
+
 .settings-shell {
-  padding: 16px;
+  padding: 18px;
   max-width: 960px;
   margin: 0 auto;
+  color: var(--text);
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .tabs button {
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #ffffff;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text);
+  transition: transform 120ms ease, box-shadow 140ms ease, border-color 140ms ease;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.tabs button:hover {
+  transform: translateY(-1px);
+  border-color: #6366f1;
 }
 
 .tabs button.active {
-  background: #4f46e5;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
   color: #ffffff;
-  border-color: #4f46e5;
+  border-color: transparent;
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.35);
 }
 
 .panel {
-  padding: 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #ffffff;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-strong);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
 }

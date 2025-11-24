@@ -1,7 +1,6 @@
 import { Component, ElementRef, Input, ViewChild, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-type Message = { id: number; author: 'me' | 'other'; text: string; time: string };
+import { UiMessage } from '../../../core/models/chat/ui-message.model';
 
 @Component({
   selector: 'app-chat-window',
@@ -12,7 +11,7 @@ type Message = { id: number; author: 'me' | 'other'; text: string; time: string 
 })
 export class ChatWindowComponent implements AfterViewInit, OnChanges {
   @Input() title = '';
-  @Input() messages: Message[] = [];
+  @Input() messages: UiMessage[] = [];
 
   @ViewChild('scroller') scroller?: ElementRef<HTMLDivElement>;
 

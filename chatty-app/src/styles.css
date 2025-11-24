@@ -3,13 +3,34 @@
 :root {
   --primary: #258cf4;
   --background-light: #f5f7f8;
-  --background-dark: #101922;
+  --background-dark: #0b1220;
+  --surface-light: #ffffff;
+  --surface-dark: #121a26;
+  --border-light: #e2e8f0;
+  --border-dark: #1f2937;
+  --text-light: #0f172a;
+  --text-dark: #e5e7eb;
+  --muted-light: #5b6475;
+  --muted-dark: #94a3b8;
   --font-display: "Plus Jakarta Sans", "Noto Sans", sans-serif;
+  --app-bg: var(--background-light);
+  --app-text: var(--text-light);
+  --card-surface: var(--surface-light);
+  --card-border: var(--border-light);
 }
 
+html,
 body {
   font-family: var(--font-display);
-  background: var(--background-light);
+  background: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color 180ms ease, color 180ms ease;
+  min-height: 100%;
+}
+
+.theme-dark body {
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 .font-display {
@@ -32,12 +53,19 @@ body {
   background-color: var(--primary);
 }
 
-.dark .bg-background-dark {
+.theme-dark .bg-background-dark {
   background-color: var(--background-dark);
 }
 
-.dark .text-primary {
+.theme-dark .text-primary {
   color: var(--primary);
+}
+
+.theme-dark {
+  --app-bg: var(--background-dark);
+  --app-text: var(--text-dark);
+  --card-surface: var(--surface-dark);
+  --card-border: var(--border-dark);
 }
 
 .material-symbols-outlined {

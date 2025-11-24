@@ -5,7 +5,8 @@
       type="radio"
       name="theme"
       value="light"
-      [(ngModel)]="theme" />
+      [(ngModel)]="theme"
+      (change)="setTheme('light')" />
     <span>Light</span>
   </label>
 
@@ -14,7 +15,8 @@
       type="radio"
       name="theme"
       value="dark"
-      [(ngModel)]="theme" />
+      [(ngModel)]="theme"
+      (change)="setTheme('dark')" />
     <span>Dark</span>
   </label>
 </div>

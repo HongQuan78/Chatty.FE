@@ -4,12 +4,28 @@
     <span class="brand-name">Chatty</span>
   </div>
 
-
-  <div class="nav-actions">
-    <button type="button" class="ghost" (click)="profile()">Profile</button>
-    <button type="button" class="ghost" (click)="logout()">Logout</button>
-  </div>
+  @if (user$ | async; as user) {
+    <div class="nav-actions">
+      <div class="user-pill">
+        <div class="avatar">{{ (user.displayName || user.userName || user.email)[0] || '?' }}</div>
+        <div class="meta">
+          <div class="name">{{ user.displayName || user.userName }}</div>
+          <div class="email">{{ user.email }}</div>
+        </div>
+      </div>
+      <button type="button" class="ghost" (click)="profile()">Profile</button>
+      <button type="button" class="ghost" (click)="logout()">Logout</button>
+    </div>
+  }
 
 </nav>
 } @else {
+<nav class="nav">
+  <div class="brand">
+    <span class="brand-name">Chatty</span>
+  </div>
+  <div class="nav-actions">
+    <a routerLink="/login" class="link-btn primary">Login</a>
+  </div>
+</nav>
 }

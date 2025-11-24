@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Store } from '@ngxs/store';
-import { Login } from '../../../state/auth.actions';
 import { AuthLayoutComponent } from '../auth-layout/auth-layout.component';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -21,7 +20,7 @@ export class RegisterComponent {
   submitting = false;
   error = '';
 
-  constructor(private store: Store, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   goLogin() {
     this.router.navigate(['/login']);
@@ -38,13 +37,14 @@ export class RegisterComponent {
     this.error = '';
     // Dummy submit to mimic loading state.
     this.submitting = true;
-    this.store.dispatch(new Login({ name: this.name, email: this.email })).subscribe({
+    this.authService.register(this.name, this.email, this.password).subscribe({
       next: () => {
         this.submitting = false;
         this.router.navigate(['/chat']);
       },
-      error: () => {
+      error: (err) => {
         this.submitting = false;
+        this.error = err?.error?.title || 'Registration failed';
       },
     });
   }

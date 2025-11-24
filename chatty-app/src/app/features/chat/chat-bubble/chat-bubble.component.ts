@@ -1,4 +1,4 @@
-import { Component, effect, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
 import { MessageInputBoxComponent } from '../message-input-box/message-input-box.component';
@@ -8,21 +8,34 @@ import { ChatSessionService } from '../chat-session.service';
 @Component({
   selector: 'app-chat-bubble',
   standalone: true,
-  imports: [CommonModule, ChatWindowComponent, MessageInputBoxComponent, SidebarConversationsComponent],
+  imports: [
+    CommonModule,
+    ChatWindowComponent,
+    MessageInputBoxComponent,
+    SidebarConversationsComponent,
+  ],
   templateUrl: './chat-bubble.component.html',
   styleUrl: './chat-bubble.component.scss',
 })
 export class ChatBubbleComponent {
-  isOpen = signal(true);
+  isOpen = signal(false);
   unread = signal(0);
-  activeConversation!: ChatSessionService['activeConversation'];
+  activeConversationId!: ChatSessionService['activeConversationId'];
   messages!: ChatSessionService['messages'];
+  conversations!: ChatSessionService['conversations'];
+  title = computed(() => {
+    const id = this.activeConversationId();
+    const match = this.conversations().find((c) => c.id === id);
+    return match?.title ?? 'Chat';
+  });
 
   chatWindowRef = viewChild(ChatWindowComponent);
 
   constructor(private chatSession: ChatSessionService) {
-    this.activeConversation = chatSession.activeConversation;
+    this.activeConversationId = chatSession.activeConversationId;
     this.messages = chatSession.messages;
+    this.conversations = chatSession.conversations;
+    this.chatSession.init();
 
     effect(() => {
       // Keep the latest message visible when the thread or open state changes.
@@ -34,7 +47,7 @@ export class ChatBubbleComponent {
   }
 
   toggle() {
-    this.isOpen.update(v => !v);
+    this.isOpen.update((v) => !v);
     if (this.isOpen()) {
       this.unread.set(0);
     }
@@ -44,8 +57,8 @@ export class ChatBubbleComponent {
     this.isOpen.set(false);
   }
 
-  selectConversation(name: string) {
-    this.chatSession.selectConversation(name);
+  selectConversation(id: string) {
+    this.chatSession.selectConversation(id);
     if (this.isOpen()) {
       this.unread.set(0);
     }
@@ -57,7 +70,11 @@ export class ChatBubbleComponent {
     if (this.isOpen()) {
       this.unread.set(0);
     } else {
-      this.unread.update(count => count + 1);
+      this.unread.update((count) => count + 1);
     }
+  }
+
+  get messagesAsAny(): any {
+    return this.messages();
   }
 }

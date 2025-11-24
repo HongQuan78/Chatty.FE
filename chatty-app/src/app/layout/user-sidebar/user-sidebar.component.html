@@ -1,0 +1,35 @@
+<aside class="sidebar">
+  <div class="profile" *ngIf="user$ | async as user">
+    <div class="avatar">{{ (user.displayName || user.userName || user.email)[0] || '?' }}</div>
+    <div>
+      <div class="name">{{ user.displayName || user.userName }}</div>
+      <div class="email">{{ user.email }}</div>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <a routerLink="/profile" class="item">
+      <span class="material-symbols-outlined">
+        account_circle
+      </span>
+      <span>Account</span>
+    </a>
+    <a routerLink="/chat" class="item">
+      <span class="material-symbols-outlined">chat</span>
+      <span>Chats</span>
+    </a>
+    <a routerLink="/settings" class="item">
+      <span class="material-symbols-outlined">settings</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <button class="logout" type="button" (click)="logout()">
+    <span class="material-symbols-outlined">logout</span>
+    <span>Log Out</span>
+  </button>
+
+  <button class="close" type="button" (click)="close.emit()">
+    <span class="material-symbols-outlined">close</span>
+  </button>
+</aside>
