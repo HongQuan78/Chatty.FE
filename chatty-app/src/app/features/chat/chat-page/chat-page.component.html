@@ -1,15 +1,54 @@
 <div
   class="chat-page relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-rootn">
   <div class="chat-shell">
-    <app-sidebar-conversations class="sidebar" (select)="selectConversation($event)" [conversations]="conversations()"
-      [active]="activeConversation()">
+    <app-sidebar-conversations
+      class="sidebar"
+      (select)="selectConversation($event)"
+      (startCompose)="openCompose()"
+      [conversations]="conversations()"
+      [activeId]="activeConversationId()">
     </app-sidebar-conversations>
     <section class="chat-area">
-      <app-chat-window [title]="activeConversation()" [messages]="messages()" #window>
-      </app-chat-window>
+      @if (composeOpen()) {
+        <div class="composer">
+          <div class="row">
+            <input [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" type="text" placeholder="Tìm theo username hoặc email" />
+            <button type="button" (click)="searchUsers()" [disabled]="searching()">Tìm</button>
+            <button type="button" class="ghost" (click)="closeCompose()">Đóng</button>
+          </div>
+          <div class="results">
+            @if (searching()) {
+              <div class="muted">Đang tìm...</div>
+            } @else if (searchError()) {
+              <div class="muted">{{ searchError() }}</div>
+            } @else {
+              @for (u of searchResults(); track u.id) {
+                <button type="button" class="result" (click)="startConversation(u)">
+                  <div class="avatar">{{ (u.displayName || u.userName || '?')[0] }}</div>
+                  <div class="meta">
+                    <div class="name">{{ u.displayName || u.userName }}</div>
+                    <div class="sub">{{ u.email }}</div>
+                  </div>
+                  <span class="pill">Bắt đầu</span>
+                </button>
+              }
+            }
+          </div>
+        </div>
+      }
 
-      <app-message-input-box class="input-box" (send)="sendMessage($event)">
-      </app-message-input-box>
+      @if (activeConversationId()) {
+        <app-chat-window [title]="title()" [messages]="messagesAsAny" #window>
+        </app-chat-window>
+
+        <app-message-input-box class="input-box" (send)="sendMessage($event)">
+        </app-message-input-box>
+      } @else {
+        <div class="empty-state">
+          <p class="title">No conversations</p>
+          <p class="muted">Select or create a conversation to start chatting.</p>
+        </div>
+      }
     </section>
   </div>
 </div>

@@ -1,3 +1,19 @@
+:host {
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --border: #e5e7eb;
+}
+
+:host-context(.theme-dark) {
+  --surface: #121a26;
+  --surface-alt: #0d1624;
+  --border: #1f2937;
+}
+
+.chat-bubble {
+  color: #ffffff;
+}
+
 .chat-bubble {
   position: fixed;
   bottom: 20px;
@@ -50,10 +66,10 @@
 
 .panel {
   width: min(640px, calc(100vw - 32px));
-  background: #ffffff;
+  background: var(--surface, #ffffff);
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border, #e5e7eb);
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
   display: grid;
   grid-template-rows: auto 1fr;
@@ -93,13 +109,13 @@
   display: grid;
   grid-template-columns: 240px 1fr;
   grid-template-rows: 1fr;
-  background: #f8fafc;
+  background: var(--surface-alt, #f8fafc);
   height: min(560px, 70vh);
 }
 
 .panel__sidebar {
-  border-right: 1px solid #e5e7eb;
-  background: #ffffff;
+  border-right: 1px solid var(--border, #e5e7eb);
+  background: var(--surface, #ffffff);
 }
 
 .panel__chat {

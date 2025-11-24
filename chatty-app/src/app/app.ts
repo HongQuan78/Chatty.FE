@@ -1,5 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { Shell } from './layout/shell/shell';
+import { AuthService } from './core/services/auth.service';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +12,10 @@ import { Shell } from './layout/shell/shell';
 })
 export class App {
   protected readonly title = signal('app');
+
+  constructor(private auth: AuthService, private theme: ThemeService) {
+    this.auth.restoreSession().subscribe();
+    // ThemeService constructor applies saved/system theme.
+    void this.theme;
+  }
 }

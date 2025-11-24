@@ -1,48 +1,36 @@
 <div class="chat-bubble" [class.open]="isOpen()">
-  <button
-    type="button"
-    class="fab"
-    (click)="toggle()"
-    [attr.aria-expanded]="isOpen()"
+  <button type="button" class="fab" (click)="toggle()" [attr.aria-expanded]="isOpen()"
     aria-controls="chat-floating-panel">
     <svg viewBox="0 0 24 24" class="fab__icon" aria-hidden="true">
-      <path
-        d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v7A2.5 2.5 0 0 1 17.5 15H9l-4 4v-4.5z"
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v7A2.5 2.5 0 0 1 17.5 15H9l-4 4v-4.5z"
         fill="currentColor" />
     </svg>
     <span class="badge" *ngIf="!isOpen() && unread() > 0">{{ unread() }}</span>
   </button>
 
   @if (isOpen()) {
-    <section class="panel" id="chat-floating-panel">
-      <header class="panel__header">
-        <div>
-          <div class="panel__title">Chat nhanh</div>
-          <div class="panel__subtitle">Trực tuyến</div>
-        </div>
-        <button type="button" class="panel__close" (click)="close()" aria-label="Thu nhỏ chat">×</button>
-      </header>
-
-      <div class="panel__body">
-        <app-sidebar-conversations
-          class="panel__sidebar"
-          [active]="activeConversation()"
-          (select)="selectConversation($event)">
-        </app-sidebar-conversations>
-
-        <div class="panel__chat">
-          <app-chat-window
-            [title]="activeConversation()"
-            [messages]="messages()"
-            #window>
-          </app-chat-window>
-
-          <app-message-input-box
-            class="input"
-            (send)="sendMessage($event)">
-          </app-message-input-box>
-        </div>
+  <section class="panel" id="chat-floating-panel">
+    <header class="panel__header">
+      <div>
+        <div class="panel__title">Quick chat</div>
+        <div class="panel__subtitle">Online</div>
       </div>
-    </section>
+      <button type="button" class="panel__close" (click)="close()" aria-label="Close chat">×</button>
+    </header>
+
+    <div class="panel__body">
+      <app-sidebar-conversations class="panel__sidebar" [activeId]="activeConversationId()"
+        [conversations]="conversations()" (select)="selectConversation($event)">
+      </app-sidebar-conversations>
+
+      <div class="panel__chat">
+        <app-chat-window [title]="title()" [messages]="messagesAsAny" #window>
+        </app-chat-window>
+
+        <app-message-input-box class="input" (send)="sendMessage($event)">
+        </app-message-input-box>
+      </div>
+    </div>
+  </section>
   }
 </div>

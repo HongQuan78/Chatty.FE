@@ -1,9 +1,37 @@
-<div class="app-shell">
-  <app-nav></app-nav>
+<div
+  class="app-shell"
+  [class.sidebar-open]="showSidebar()"
+  [class.reveal-active]="revealActive()"
+>
   <main class="app-main">
     <router-outlet></router-outlet>
   </main>
+
   @if ((isAuthenticated$ | async) && chatVisited() && !isOnChatRoute()) {
     <app-chat-bubble></app-chat-bubble>
+  }
+
+  @if (isAuthenticated$ | async) {
+    <div
+      class="sidebar-reveal-zone"
+      (mousemove)="onRevealMove($event)"
+      (mouseleave)="onRevealLeave()"
+    ></div>
+    <button
+      class="sidebar-toggle"
+      type="button"
+      (click)="toggleSidebar()"
+      [style.top.px]="toggleY()"
+      (mouseenter)="onToggleEnter()"
+      (mouseleave)="onToggleLeave()"
+    >
+      <span class="material-symbols-outlined">settings</span>
+    </button>
+    @if (showSidebar()) {
+      <div class="sidebar-backdrop" (click)="toggleSidebar()"></div>
+      <div class="sidebar-overlay" (click)="$event.stopPropagation()">
+        <app-user-sidebar (close)="toggleSidebar()"></app-user-sidebar>
+      </div>
+    }
   }
 </div>

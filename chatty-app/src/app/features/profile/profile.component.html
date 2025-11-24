@@ -1,48 +1,150 @@
-<div class="profile-shell">
-  <section class="summary-card">
-    <div class="avatar">J</div>
-    <div>
-      <div class="name">{{ displayName }}</div>
-      <div class="email">{{ email }}</div>
-      <div class="status">{{ status }}</div>
+<div class="profile-page">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <p class="eyebrow">profile center</p>
+        <h1>Polish your profile and keep it secure</h1>
+        <p class="muted">A refreshed look with a calm gradient backdrop and clear, confident actions.</p>
+      <div class="hero-tags">
+        <div class="tag">
+          <span class="tag-label">Email</span>
+          <span class="tag-value">{{ email || 'Not set yet' }}</span>
+        </div>
+          <div class="tag">
+            <span class="tag-label">Timezone</span>
+            <span class="tag-value">{{ timezone }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="identity">
+        <div class="avatar-shell">
+          <div
+            class="avatar large"
+            [class.with-image]="avatarPreview()"
+            [style.background-image]="avatarPreview() ? 'url(' + avatarPreview() + ')' : ''"
+          >
+            <span *ngIf="!avatarPreview()">{{ (displayName || user?.userName || 'U') | slice: 0:1 }}</span>
+          </div>
+          <button type="button" class="text-button" (click)="avatarInput.click()">Upload image</button>
+          <input
+            #avatarInput
+            type="file"
+            accept="image/*"
+            class="sr-only"
+            (change)="onAvatarChange($event)"
+          />
+        </div>
+        <div class="identity-text">
+          <div class="identity-name">{{ displayName || user?.userName }}</div>
+          <p class="muted small">This is how others see you in Chatty.</p>
+        </div>
+      </div>
     </div>
-    <button type="button" class="ghost">Change avatar</button>
   </section>
 
-  <section class="card">
-    <div class="card-head">
-      <h2>Profile</h2>
-      <button type="button" class="primary" (click)="save()">Save changes</button>
-    </div>
-    <div class="grid">
+  <div class="content-grid">
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <p class="eyebrow">Profile</p>
+          <h3>Public details</h3>
+          <p class="muted small">Name and bio help teammates recognize you.</p>
+        </div>
+        <div class="pill success">Live preview</div>
+      </div>
+
+      <div class="grid two-col">
+        <label class="field">
+          <span>Display Name</span>
+          <input
+            type="text"
+            [(ngModel)]="displayName"
+            placeholder="What should teammates call you?"
+          />
+        </label>
+
+        <label class="field">
+          <span>Email</span>
+          <input type="email" [value]="email" disabled />
+          <div class="hint">Email syncs from your sign-in account.</div>
+        </label>
+      </div>
+
       <label class="field">
-        <span>Display name</span>
-        <input type="text" [(ngModel)]="displayName" />
-      </label>
-      <label class="field">
-        <span>Email</span>
-        <input type="email" [(ngModel)]="email" />
-      </label>
-      <label class="field">
-        <span>Status</span>
-        <input type="text" [(ngModel)]="status" />
-      </label>
-      <label class="field full">
         <span>Bio</span>
-        <textarea rows="3" [(ngModel)]="bio"></textarea>
+        <textarea
+          rows="3"
+          [(ngModel)]="bio"
+          [attr.maxlength]="bioLimit"
+          placeholder="Share a short hello or what you're excited about."
+        ></textarea>
+        <div class="hint">{{ bioLength() }}/{{ bioLimit }}</div>
       </label>
-      <label class="field">
-        <span>Time zone</span>
-        <input type="text" [(ngModel)]="timezone" />
-      </label>
-    </div>
-  </section>
 
-  <section class="card">
-    <div class="card-head">
-      <h2>Security</h2>
-      <button type="button" class="ghost">Change password</button>
+      <div class="preview">
+        <div class="avatar small">{{ (displayName || user?.userName || 'U') | slice: 0:1 }}</div>
+        <div>
+          <div class="preview-name">{{ displayName || 'New teammate' }}</div>
+          <div class="preview-bio">
+            {{ bio || 'Add a couple of lines to make your profile feel warmer.' }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card accent">
+      <div class="card-head">
+        <div>
+          <p class="eyebrow">Security</p>
+          <h3>Refresh password</h3>
+          <p class="muted small">Rotate your password regularly to protect your account.</p>
+        </div>
+        <div class="pill warning">Private</div>
+      </div>
+
+      <div class="grid two-col">
+        <label class="field">
+          <span>Current password</span>
+          <input type="password" [(ngModel)]="currentPassword" placeholder="********" />
+        </label>
+
+        <div class="field tip">
+          <div class="tip-title">Tip</div>
+          <p class="muted small">Use at least 8 characters with numbers and symbols.</p>
+        </div>
+
+        <label class="field">
+          <span>New password</span>
+          <input type="password" [(ngModel)]="newPassword" placeholder="New password" />
+        </label>
+
+        <label class="field">
+          <span>Confirm new password</span>
+          <input type="password" [(ngModel)]="confirmPassword" placeholder="Repeat password" />
+          <div class="error" *ngIf="error()">{{ error() }}</div>
+        </label>
+      </div>
+    </section>
+  </div>
+
+  <div class="actions floating">
+    <div class="muted small">Save now and return later any time.</div>
+    <div class="action-buttons">
+      <button type="button" class="ghost" (click)="cancel()">Cancel</button>
+      <button
+        type="button"
+        class="primary"
+        (click)="save()"
+        [disabled]="loading() || !canSubmit()"
+      >
+        {{ loading() ? 'Saving...' : 'Save changes' }}
+      </button>
     </div>
-    <p class="muted">Set a strong password and enable 2FA (coming soon).</p>
-  </section>
+  </div>
+
+  <div class="toast success" *ngIf="feedback()" role="status" aria-live="polite">
+    {{ feedback() }}
+  </div>
 </div>

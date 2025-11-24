@@ -2,9 +2,14 @@
   <div class="header">
     <div class="avatar">U</div>
     <div class="title">Chats</div>
-    <button class="icon" type="button">
-      <span class="material-symbols-outlined">edit_square</span>
-    </button>
+    <div class="actions">
+      <button class="icon" type="button">
+        <span class="material-symbols-outlined">settings</span>
+      </button>
+      <button class="icon" type="button" (click)="startCompose.emit()">
+        <span class="material-symbols-outlined">edit_square</span>
+      </button>
+    </div>
   </div>
 
   <div class="search">
@@ -13,18 +18,15 @@
   </div>
 
   <div class="list">
-    <button
-      *ngFor="let c of filteredConversations()"
-      class="item"
-      [class.active]="c.name === active"
-      type="button"
-      (click)="select.emit(c.name)">
-      <div class="avatar small">{{ c.name[0] || '?' }}</div>
-      <div class="meta">
-        <div class="name">{{ c.name }}</div>
-        <div class="last">{{ c.last }}</div>
-      </div>
-      <span class="time">{{ c.time }}</span>
-    </button>
+    @for (c of filteredConversations(); track c.id) {
+      <button class="item" [class.active]="c.id === activeId" type="button" (click)="select.emit(c.id)">
+        <div class="avatar small">{{ c.title[0] || '?' }}</div>
+        <div class="meta">
+          <div class="name">{{ c.title }}</div>
+          <div class="last">{{ c.last }}</div>
+        </div>
+        <span class="time">{{ c.time }}</span>
+      </button>
+    }
   </div>
 </div>
