@@ -3,8 +3,8 @@
     <div class="flex items-center gap-4">
       <div class="avatar">{{ title[0] || '?' }}</div>
       <div class="flex flex-col">
-        <h2 class="text-gray-900 dark:text-white text-base font-bold leading-tight">{{ title || 'Conversation' }}</h2>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">Online</p>
+        <h2 class="text-base font-bold leading-tight title">{{ title || 'Conversation' }}</h2>
+        <p class="text-green-300 dark:text-gray-400 text-sm">Online</p>
       </div>
     </div>
     <div class="flex items-center gap-2">
@@ -15,13 +15,8 @@
   </header>
 
   <div class="messages flex-1 p-4 md:p-6" #scroller>
-    <div
-      *ngIf="messages.length; else empty"
-      class="flex flex-col gap-3">
-      <div
-        *ngFor="let m of messages"
-        class="bubble"
-        [class.me]="m.author === 'me'">
+    <div *ngIf="messages.length; else empty" class="flex flex-col gap-3">
+      <div *ngFor="let m of messages" class="bubble" [class.me]="m.author === 'me'">
         <div class="text">{{ m.text }}</div>
         <span class="time">{{ m.time }}</span>
       </div>

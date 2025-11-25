@@ -56,6 +56,30 @@
           </div>
         </label>
       </div>
+      <div class="pt-1">
+        <label
+          class="flex items-center gap-4 rounded-2xl border border-[#dbe0e6] dark:border-gray-700 bg-white/90 dark:bg-background-dark px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          <div class="flex flex-col leading-tight">
+            <span class="text-sm font-semibold text-[#111418] dark:text-gray-100">Remember me</span>
+            <span class="text-xs text-[#60758a] dark:text-gray-400">Stay signed in on this device</span>
+          </div>
+          <span class="ml-auto relative inline-flex h-7 w-12 items-center justify-center">
+            <input
+              type="checkbox"
+              name="rememberMe"
+              [(ngModel)]="rememberMe"
+              class="peer sr-only"
+            />
+            <span
+              class="h-7 w-12 rounded-full border border-[#cfd5df] bg-[radial-gradient(circle_at_30%_30%,#dfe5f0_0,#c6cbd7_55%,#b9beca_100%)] dark:bg-gray-700 dark:border-gray-600 transition-all duration-200 shadow-inner peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#2563eb] peer-checked:to-[#4f8bff] peer-checked:shadow-[0_8px_18px_rgba(64,80,255,0.35)]"
+            ></span>
+            <span
+              class="absolute left-1 h-5 w-5 rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] transition-transform duration-200 peer-checked:translate-x-5 peer-checked:shadow-[0_6px_14px_rgba(0,0,0,0.16)]"
+            ></span>
+          </span>
+        </label>
+      </div>
       <!-- CTA Button -->
       <div class="py-2">
         <button type="submit" [disabled]="submitting"

@@ -1,20 +1,21 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { map, catchError, of } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { AuthState } from '../../state/auth.state';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+// Redirects authenticated users away from guest-only pages (login/register).
+export const guestGuard: CanActivateFn = () => {
   const store = inject(Store);
   const router = inject(Router);
   const auth = inject(AuthService);
 
   const isAuthed = store.selectSnapshot(AuthState.isAuthenticated);
-  if (isAuthed) return true;
+  if (isAuthed) return router.createUrlTree(['/chat']);
 
   return auth.restoreSession().pipe(
-    map((user): boolean | UrlTree => (user ? true : router.createUrlTree(['/login']))),
-    catchError(() => of(router.createUrlTree(['/login'])))
+    map((user): boolean | UrlTree => (user ? router.createUrlTree(['/chat']) : true)),
+    catchError(() => of(true))
   );
 };

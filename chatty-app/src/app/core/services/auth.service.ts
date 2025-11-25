@@ -25,7 +25,7 @@ export class AuthService {
   private storage = inject(TokenStorageService);
   private http = inject(HttpClient);
 
-  login(email: string, password: string): Observable<User> {
+  login(email: string, password: string, rememberMe = true): Observable<User> {
     return this.http.post<LoginResponse>(`${API_BASE_URL}/auth/login`, { email, password }).pipe(
       switchMap((res) =>
         this.fetchUser(res.userId, res.accessToken).pipe(
@@ -36,7 +36,7 @@ export class AuthService {
               refreshToken: res.refreshToken,
               accessTokenExp: this.toMsFromNow(res.expiresIn),
               refreshTokenExp: this.toMsFromNow(res.refreshExpiresIn),
-            })
+            }, rememberMe)
           ),
           map((fetchedUser) => fetchedUser)
         )
@@ -134,8 +134,9 @@ export class AuthService {
     });
   }
 
-  private persistSession(session: SessionPayload) {
-    this.storage.save(session);
+  private persistSession(session: SessionPayload, rememberMe?: boolean) {
+    const persistence = rememberMe ?? this.storage.getLastPersistence() ?? true;
+    this.storage.save(session, persistence);
     this.store.dispatch(new Login(session));
   }
 
