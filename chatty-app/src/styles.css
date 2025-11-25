@@ -28,6 +28,23 @@ body {
   min-height: 100%;
 }
 
+.theme-light {
+  --app-bg: var(--background-light);
+  --app-text: var(--text-light);
+  --card-surface: var(--surface-light);
+  --card-border: var(--border-light);
+  color-scheme: light;
+}
+
+.theme-dark {
+  --app-bg: var(--background-dark);
+  --app-text: var(--text-dark);
+  --card-surface: var(--surface-dark);
+  --card-border: var(--border-dark);
+  color-scheme: dark;
+}
+
+.theme-light body,
 .theme-dark body {
   background: var(--app-bg);
   color: var(--app-text);
@@ -59,13 +76,6 @@ body {
 
 .theme-dark .text-primary {
   color: var(--primary);
-}
-
-.theme-dark {
-  --app-bg: var(--background-dark);
-  --app-text: var(--text-dark);
-  --card-surface: var(--surface-dark);
-  --card-border: var(--border-dark);
 }
 
 .material-symbols-outlined {

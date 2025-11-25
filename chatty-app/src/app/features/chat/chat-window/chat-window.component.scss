@@ -14,6 +14,7 @@
   --text: #e5e7eb;
   --muted: #cbd5e1;
   --shadow: rgba(0, 0, 0, 0.35);
+  color: "white";
 }
 
 .window {
@@ -128,8 +129,13 @@
   gap: 12px;
   min-height: 0;
 }
+
 .messages {
   overflow-y: scroll;
   padding: 16px;
   background: linear-gradient(180deg, var(--surface-alt) 0%, var(--surface) 100%);
+}
+
+.title {
+  color: "white" !important;
 }

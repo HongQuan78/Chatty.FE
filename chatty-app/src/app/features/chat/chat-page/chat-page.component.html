@@ -12,13 +12,13 @@
       @if (composeOpen()) {
         <div class="composer">
           <div class="row">
-            <input [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" type="text" placeholder="Tìm theo username hoặc email" />
-            <button type="button" (click)="searchUsers()" [disabled]="searching()">Tìm</button>
-            <button type="button" class="ghost" (click)="closeCompose()">Đóng</button>
+            <input [ngModel]="searchTerm()" (ngModelChange)="onSearchTermChange($event)" type="text" placeholder="Search by username or email" />
+            <button type="button" (click)="searchUsers()" [disabled]="searching()">Search</button>
+            <button type="button" class="ghost" (click)="closeCompose()">Close</button>
           </div>
           <div class="results">
             @if (searching()) {
-              <div class="muted">Đang tìm...</div>
+              <div class="muted">Searching...</div>
             } @else if (searchError()) {
               <div class="muted">{{ searchError() }}</div>
             } @else {
@@ -29,7 +29,7 @@
                     <div class="name">{{ u.displayName || u.userName }}</div>
                     <div class="sub">{{ u.email }}</div>
                   </div>
-                  <span class="pill">Bắt đầu</span>
+                  <span class="pill">Start</span>
                 </button>
               }
             }

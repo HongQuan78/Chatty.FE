@@ -107,22 +107,44 @@
       <div class="grid two-col">
         <label class="field">
           <span>Current password</span>
-          <input type="password" [(ngModel)]="currentPassword" placeholder="********" />
+          <div class="with-tip">
+            <input type="password" [(ngModel)]="currentPassword" placeholder="********" />
+            <span class="hint-icon" tabindex="0" aria-label="Password tip">
+              !
+              <span class="hint-bubble">
+                <strong>Tip</strong>
+                <span>Use at least 8 characters with numbers and symbols.</span>
+              </span>
+            </span>
+          </div>
         </label>
-
-        <div class="field tip">
-          <div class="tip-title">Tip</div>
-          <p class="muted small">Use at least 8 characters with numbers and symbols.</p>
-        </div>
 
         <label class="field">
           <span>New password</span>
-          <input type="password" [(ngModel)]="newPassword" placeholder="New password" />
+          <div class="with-tip">
+            <input type="password" [(ngModel)]="newPassword" placeholder="New password" />
+            <span class="hint-icon" tabindex="0" aria-label="Password tip">
+              !
+              <span class="hint-bubble">
+                <strong>Tip</strong>
+                <span>Use at least 8 characters with numbers and symbols.</span>
+              </span>
+            </span>
+          </div>
         </label>
 
         <label class="field">
           <span>Confirm new password</span>
-          <input type="password" [(ngModel)]="confirmPassword" placeholder="Repeat password" />
+          <div class="with-tip">
+            <input type="password" [(ngModel)]="confirmPassword" placeholder="Repeat password" />
+            <span class="hint-icon" tabindex="0" aria-label="Password tip">
+              !
+              <span class="hint-bubble">
+                <strong>Tip</strong>
+                <span>Use at least 8 characters with numbers and symbols.</span>
+              </span>
+            </span>
+          </div>
           <div class="error" *ngIf="error()">{{ error() }}</div>
         </label>
       </div>
@@ -132,10 +154,10 @@
   <div class="actions floating">
     <div class="muted small">Save now and return later any time.</div>
     <div class="action-buttons">
-      <button type="button" class="ghost" (click)="cancel()">Cancel</button>
+      <button type="button" class="ghost cancel-btn" (click)="cancel()">Cancel</button>
       <button
         type="button"
-        class="primary"
+        class="primary save-btn"
         (click)="save()"
         [disabled]="loading() || !canSubmit()"
       >

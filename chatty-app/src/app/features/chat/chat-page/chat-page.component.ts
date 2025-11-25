@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   EnvironmentInjector,
+  OnDestroy,
   OnInit,
   computed,
   effect,
@@ -9,12 +10,22 @@ import {
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { SidebarConversationsComponent } from '../sidebar-conversations/sidebar-conversations.component';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
 import { MessageInputBoxComponent } from '../message-input-box/message-input-box.component';
 import { ChatSessionService } from '../chat-session.service';
-import { FormsModule } from '@angular/forms';
 import { User } from '../../../core/models/auth/user.model';
+import {
+  Subject,
+  Subscription,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 
 @Component({
   selector: 'app-chat-page',
@@ -29,7 +40,7 @@ import { User } from '../../../core/models/auth/user.model';
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.scss',
 })
-export class ChatPageComponent implements AfterViewInit, OnInit {
+export class ChatPageComponent implements AfterViewInit, OnInit, OnDestroy {
   activeConversationId!: ChatSessionService['activeConversationId'];
   messages!: ChatSessionService['messages'];
   conversations!: ChatSessionService['conversations'];
@@ -39,6 +50,8 @@ export class ChatPageComponent implements AfterViewInit, OnInit {
   searching = signal(false);
   searchResults = signal<User[]>([]);
   searchError = signal('');
+  private searchInput$ = new Subject<string>();
+  private searchSub?: Subscription;
 
   title = computed(() => {
     const active = this.activeConversationId();
@@ -57,6 +70,39 @@ export class ChatPageComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.chatSession.init();
+    this.searchSub = this.searchInput$
+      .pipe(
+        tap((term) => this.searchTerm.set(term)),
+        debounceTime(250),
+        distinctUntilChanged(),
+        switchMap((term) => {
+          const keyword = term.trim();
+          if (keyword.length < 2) {
+            this.searchError.set('Enter at least 2 characters to search.');
+            this.searchResults.set([]);
+            this.searching.set(false);
+            return of([]);
+          }
+          this.searchError.set('');
+          this.searching.set(true);
+          return this.chatSession.searchUsers(keyword).pipe(
+            tap((users) => {
+              this.searchResults.set(users);
+              this.searching.set(false);
+              if (!users.length) {
+                this.searchError.set('No users found.');
+              }
+            }),
+            catchError(() => {
+              this.searching.set(false);
+              this.searchError.set('Search failed, please try again.');
+              this.searchResults.set([]);
+              return of([]);
+            })
+          );
+        })
+      )
+      .subscribe();
   }
 
   ngAfterViewInit() {
@@ -68,6 +114,10 @@ export class ChatPageComponent implements AfterViewInit, OnInit {
       },
       { injector: this.injector }
     );
+  }
+
+  ngOnDestroy() {
+    this.searchSub?.unsubscribe();
   }
 
   selectConversation(id: string) {
@@ -93,28 +143,12 @@ export class ChatPageComponent implements AfterViewInit, OnInit {
     this.composeOpen.set(false);
   }
 
+  onSearchTermChange(term: string) {
+    this.searchInput$.next(term);
+  }
+
   searchUsers() {
-    const keyword = this.searchTerm().trim();
-    if (keyword.length < 2) {
-      this.searchError.set('Nhập ít nhất 2 ký tự để tìm.');
-      this.searchResults.set([]);
-      return;
-    }
-    this.searchError.set('');
-    this.searching.set(true);
-    this.chatSession.searchUsers(keyword).subscribe({
-      next: (users) => {
-        this.searchResults.set(users);
-        this.searching.set(false);
-        if (!users.length) {
-          this.searchError.set('Không tìm thấy người dùng.');
-        }
-      },
-      error: () => {
-        this.searching.set(false);
-        this.searchError.set('Lỗi tìm kiếm, thử lại.');
-      },
-    });
+    this.searchInput$.next(this.searchTerm());
   }
 
   startConversation(user: User) {
@@ -129,7 +163,7 @@ export class ChatPageComponent implements AfterViewInit, OnInit {
       },
       error: () => {
         this.searching.set(false);
-        this.searchError.set('Không thể tạo cuộc trò chuyện.');
+        this.searchError.set('Cannot start conversation.');
       },
     });
   }
