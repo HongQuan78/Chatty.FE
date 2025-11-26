@@ -12,6 +12,7 @@ import { UiMessage } from '../../../core/models/chat/ui-message.model';
 export class ChatWindowComponent implements AfterViewInit, OnChanges {
   @Input() title = '';
   @Input() messages: UiMessage[] = [];
+  @Input() presenceLabel = '';
 
   @ViewChild('scroller') scroller?: ElementRef<HTMLDivElement>;
 

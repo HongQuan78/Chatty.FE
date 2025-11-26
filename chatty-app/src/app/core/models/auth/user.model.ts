@@ -6,4 +6,7 @@ export interface User {
   avatarUrl?: string | null;
   bio?: string | null;
   createdAt?: string;
+  lastActive?: string | null;
+  latestLogin?: string | null;
+  latestLogout?: string | null;
 }

@@ -7,9 +7,10 @@ import { SidebarConversation } from '../../core/models/chat/sidebar-conversation
 import { UiMessage } from '../../core/models/chat/ui-message.model';
 import { ChatApiService } from '../../core/services/chat-api.service';
 import { Conversation } from '../../core/models/chat/conversation.model';
-import { Message } from '../../core/models/chat/message.model';
+import { Message, MessageAttachment } from '../../core/models/chat/message.model';
 import { TokenStorageService } from '../../core/services/token-storage.service';
 import { getHubUrl } from '../../core/config/api.config';
+import { UserPresence } from '../../core/models/auth/user-presence.model';
 
 @Injectable({ providedIn: 'root' })
 export class ChatSessionService {
@@ -18,8 +19,13 @@ export class ChatSessionService {
   messages = signal<UiMessage[]>([]);
   loadingMessages = signal(false);
   loadingConversations = signal(false);
+  activePresence = signal<UserPresence | null>(null);
+  presenceLoading = signal(false);
   private hub?: HubConnection;
   private seenMessageIds = new Set<string>();
+  private heartbeatHandle?: ReturnType<typeof setInterval>;
+  private presencePollHandle?: ReturnType<typeof setInterval>;
+  private presenceUserId: string | null = null;
 
   constructor(
     private store: Store,
@@ -53,6 +59,7 @@ export class ChatSessionService {
     this.activeConversationId.set(id);
     this.ensureHubConnection();
     this.loadMessages(id);
+    this.refreshPresenceForActive(id);
   }
 
   private fetchConversations() {
@@ -100,18 +107,48 @@ export class ChatSessionService {
   }
 
   sendMessage(text: string) {
+    const content = text.trim();
+    if (!content) return;
+    this.sendPreparedMessage({ content, type: 0, attachments: null });
+  }
+
+  sendFile(file: File) {
+    const conversationId = this.activeConversationId();
+    if (!conversationId) return;
+    this.api.uploadFile(file).subscribe({
+      next: (res) => this.sendAttachment(file, res.fileUrl),
+      error: () => {},
+    });
+  }
+
+  sendAttachment(file: File, fileUrl: string) {
+    const type = file.type?.startsWith('image/') ? 1 : 2;
+    const attachment: MessageAttachment = {
+      fileName: file.name,
+      fileUrl,
+      contentType: file.type || undefined,
+      fileSizeBytes: file.size,
+    };
+    const content = file.name || (type === 1 ? 'Image' : 'File');
+    this.sendPreparedMessage({
+      content,
+      type,
+      attachments: [attachment],
+    });
+  }
+
+  private sendPreparedMessage(payload: { content: string; type: number; attachments: MessageAttachment[] | null }) {
     const conversationId = this.activeConversationId();
     const currentUserId = this.store.selectSnapshot(AuthState.user)?.id;
-    const content = text.trim();
-    if (!conversationId || !currentUserId || !content) return;
+    if (!conversationId || !currentUserId || !payload.content) return;
     this.ensureHubConnection();
 
     this.api
       .sendMessage(conversationId, {
         senderId: currentUserId,
-        content,
-        type: 0,
-        attachments: null,
+        content: payload.content,
+        type: payload.type,
+        attachments: payload.attachments ?? null,
       })
       .subscribe({
         next: (message) => {
@@ -125,7 +162,7 @@ export class ChatSessionService {
             [...list]
               .map((c) =>
                 c.id === conversationId
-                  ? { ...c, last: content, time: ui.time, lastTimestamp: ui.timestamp }
+                  ? { ...c, last: message.content, time: ui.time, lastTimestamp: ui.timestamp }
                   : c
               )
               .sort((a, b) => (b.lastTimestamp ?? 0) - (a.lastTimestamp ?? 0))
@@ -155,9 +192,12 @@ export class ChatSessionService {
     const last = conv.lastMessage?.content ?? 'No messages yet';
     const lastTimestamp = this.parseTimestamp(conv.lastMessage?.createdAt ?? conv.createdAt);
     const time = this.formatTime(conv.lastMessage?.createdAt ?? conv.createdAt);
+    const otherUserId = isGroup ? null : this.pickOtherUserId(conv, currentUserId);
 
     return {
       id: conv.id,
+      isGroup,
+      otherUserId,
       title,
       last,
       time,
@@ -173,14 +213,31 @@ export class ChatSessionService {
     return null;
   }
 
+  private pickOtherUserId(conv: Conversation, currentUserId: string): string | null {
+    const participants = conv.participants ?? [];
+    const other = participants.find((p) => p.userId !== currentUserId);
+    return other?.userId ?? null;
+  }
+
   private toUiMessage(message: Message, currentUserId: string): UiMessage {
     const timestamp = this.parseTimestamp(message.createdAt);
+    const attachments =
+      message.attachments
+        ?.map((a) => ({
+          url: a.fileUrl || a.url || '',
+          name: a.fileName,
+          contentType: a.contentType,
+          size: a.fileSizeBytes,
+        }))
+        .filter((a) => !!a.url) ?? [];
     return {
       id: message.id,
       author: message.senderId === currentUserId ? 'me' : 'other',
       text: message.content,
       time: this.formatTime(message.createdAt),
       timestamp,
+      type: message.type === 1 ? 'Image' : message.type === 2 ? 'File' : 'Text',
+      attachments,
     };
   }
 
@@ -217,6 +274,7 @@ export class ChatSessionService {
       .start()
       .then(() => {
         console.log('[SignalR] Connected');
+        this.startHeartbeat();
       })
       .catch((err) => {
         console.warn('[SignalR] Start failed', err);
@@ -226,11 +284,78 @@ export class ChatSessionService {
       if (err) {
         console.warn('[SignalR] Connection closed', err);
       }
+      this.stopHeartbeat();
     });
 
     this.hub.onreconnected(() => {
       console.log('[SignalR] Reconnected');
+      this.startHeartbeat();
+      const activeId = this.activeConversationId();
+      if (activeId) {
+        this.refreshPresenceForActive(activeId);
+      }
     });
+  }
+
+  private startHeartbeat() {
+    this.stopHeartbeat();
+    this.heartbeatHandle = setInterval(() => {
+      this.hub?.invoke('Heartbeat').catch(() => {});
+    }, 20000);
+  }
+
+  private stopHeartbeat() {
+    if (this.heartbeatHandle) {
+      clearInterval(this.heartbeatHandle);
+      this.heartbeatHandle = undefined;
+    }
+  }
+
+  private refreshPresenceForActive(conversationId: string) {
+    const currentUserId = this.store.selectSnapshot(AuthState.user)?.id;
+    if (!currentUserId) return;
+    const match = this.conversations().find((c) => c.id === conversationId);
+    if (!match || match.isGroup || !match.otherUserId) {
+      this.presenceUserId = null;
+      this.activePresence.set(null);
+      this.stopPresencePolling();
+      return;
+    }
+
+    this.presenceUserId = match.otherUserId;
+    this.fetchPresence(match.otherUserId);
+    this.startPresencePolling();
+  }
+
+  private fetchPresence(userId: string) {
+    this.presenceLoading.set(true);
+    this.api.getUserPresence(userId).subscribe({
+      next: (presence) => {
+        this.activePresence.set(presence);
+        this.presenceLoading.set(false);
+      },
+      error: () => {
+        this.activePresence.set(null);
+        this.presenceLoading.set(false);
+      },
+    });
+  }
+
+  private startPresencePolling() {
+    this.stopPresencePolling();
+    if (!this.presenceUserId) return;
+    this.presencePollHandle = setInterval(() => {
+      if (this.presenceUserId) {
+        this.fetchPresence(this.presenceUserId);
+      }
+    }, 30000);
+  }
+
+  private stopPresencePolling() {
+    if (this.presencePollHandle) {
+      clearInterval(this.presencePollHandle);
+      this.presencePollHandle = undefined;
+    }
   }
 
   private handleIncomingMessage(message: Message) {

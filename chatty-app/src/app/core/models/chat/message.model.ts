@@ -5,9 +5,10 @@ export type MessageType = 'Text' | 'Image' | 'File' | 0 | 1 | 2;
 export interface MessageAttachment {
   id?: string;
   messageId?: string;
-  url: string;
+  fileUrl?: string;
+  url?: string;
   fileName?: string;
-  fileSize?: number;
+  fileSizeBytes?: number;
   contentType?: string;
   createdAt?: string;
 }

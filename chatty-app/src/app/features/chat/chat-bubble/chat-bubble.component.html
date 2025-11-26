@@ -27,7 +27,7 @@
         <app-chat-window [title]="title()" [messages]="messagesAsAny" #window>
         </app-chat-window>
 
-        <app-message-input-box class="input" (send)="sendMessage($event)">
+        <app-message-input-box class="input" (send)="sendMessage($event)" (sendFile)="sendFile($event)">
         </app-message-input-box>
       </div>
     </div>

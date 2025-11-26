@@ -74,6 +74,15 @@ export class ChatBubbleComponent {
     }
   }
 
+  sendFile(file: File) {
+    this.chatSession.sendFile(file);
+    if (this.isOpen()) {
+      this.unread.set(0);
+    } else {
+      this.unread.update((count) => count + 1);
+    }
+  }
+
   get messagesAsAny(): any {
     return this.messages();
   }

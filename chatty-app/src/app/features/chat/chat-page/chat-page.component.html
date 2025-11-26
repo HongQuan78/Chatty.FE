@@ -38,10 +38,14 @@
       }
 
       @if (activeConversationId()) {
-        <app-chat-window [title]="title()" [messages]="messagesAsAny" #window>
+        <app-chat-window
+          [title]="title()"
+          [presenceLabel]="presenceLabel()"
+          [messages]="messagesAsAny"
+          #window>
         </app-chat-window>
 
-        <app-message-input-box class="input-box" (send)="sendMessage($event)">
+        <app-message-input-box class="input-box" (send)="sendMessage($event)" (sendFile)="sendFile($event)">
         </app-message-input-box>
       } @else {
         <div class="empty-state">

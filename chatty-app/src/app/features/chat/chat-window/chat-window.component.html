@@ -4,7 +4,7 @@
       <div class="avatar">{{ title[0] || '?' }}</div>
       <div class="flex flex-col">
         <h2 class="text-base font-bold leading-tight title">{{ title || 'Conversation' }}</h2>
-        <p class="text-green-300 dark:text-gray-400 text-sm">Online</p>
+        <p class="status text-sm">{{ presenceLabel || '...' }}</p>
       </div>
     </div>
     <div class="flex items-center gap-2">
@@ -18,6 +18,31 @@
     <div *ngIf="messages.length; else empty" class="flex flex-col gap-3">
       <div *ngFor="let m of messages" class="bubble" [class.me]="m.author === 'me'">
         <div class="text">{{ m.text }}</div>
+        <div class="attachments" *ngIf="m.attachments?.length">
+          <ng-container *ngFor="let a of m.attachments">
+            <a
+              *ngIf="a.contentType?.startsWith('image') || a.url.match(/\\.(png|jpe?g|gif|webp)$/i)"
+              class="attachment image"
+              [href]="a.url"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img [src]="a.url" [alt]="a.name || 'image attachment'" loading="lazy" />
+            </a>
+            <a
+              *ngIf="!(a.contentType?.startsWith('image') || a.url.match(/\\.(png|jpe?g|gif|webp)$/i))"
+              class="attachment file"
+              [href]="a.url"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="material-symbols-outlined">attach_file</span>
+              <div class="file-meta">
+                <span class="name">{{ a.name || 'Attachment' }}</span>
+              </div>
+            </a>
+          </ng-container>
+        </div>
         <span class="time">{{ m.time }}</span>
       </div>
     </div>

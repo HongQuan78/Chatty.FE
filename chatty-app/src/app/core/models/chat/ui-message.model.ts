@@ -4,4 +4,6 @@ export interface UiMessage {
   text: string;
   time: string;
   timestamp?: number;
+  type?: 'Text' | 'Image' | 'File';
+  attachments?: { url: string; name?: string; contentType?: string; size?: number }[];
 }

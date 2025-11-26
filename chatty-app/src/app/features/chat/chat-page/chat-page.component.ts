@@ -45,6 +45,8 @@ export class ChatPageComponent implements AfterViewInit, OnInit, OnDestroy {
   messages!: ChatSessionService['messages'];
   conversations!: ChatSessionService['conversations'];
   loadingMessages!: ChatSessionService['loadingMessages'];
+  presence!: ChatSessionService['activePresence'];
+  presenceLoading!: ChatSessionService['presenceLoading'];
   composeOpen = signal(false);
   searchTerm = signal('');
   searching = signal(false);
@@ -59,6 +61,19 @@ export class ChatPageComponent implements AfterViewInit, OnInit, OnDestroy {
     return match?.title ?? 'Select a conversation';
   });
 
+  presenceLabel = computed(() => {
+    const activeId = this.activeConversationId();
+    const conv = this.conversations().find((c) => c.id === activeId);
+    if (!conv) return '';
+    if (conv.isGroup) return 'Group conversation';
+    if (this.presenceLoading()) return 'Checking presence...';
+    const p = this.presence();
+    if (!p) return 'Offline';
+    if (p.isOnline) return 'Online';
+    if (p.offlineMinutes != null) return `Offline · ${p.offlineMinutes}m ago`;
+    return 'Offline';
+  });
+
   windowRef = viewChild(ChatWindowComponent);
 
   constructor(private chatSession: ChatSessionService, private injector: EnvironmentInjector) {
@@ -66,6 +81,8 @@ export class ChatPageComponent implements AfterViewInit, OnInit, OnDestroy {
     this.messages = chatSession.messages;
     this.conversations = chatSession.conversations;
     this.loadingMessages = chatSession.loadingMessages;
+    this.presence = chatSession.activePresence;
+    this.presenceLoading = chatSession.presenceLoading;
   }
 
   ngOnInit() {
@@ -126,6 +143,10 @@ export class ChatPageComponent implements AfterViewInit, OnInit, OnDestroy {
 
   sendMessage(text: string) {
     this.chatSession.sendMessage(text);
+  }
+
+  sendFile(file: File) {
+    this.chatSession.sendFile(file);
   }
 
   get messagesAsAny(): any {

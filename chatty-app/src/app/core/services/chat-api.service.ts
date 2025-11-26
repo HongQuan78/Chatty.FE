@@ -4,6 +4,8 @@ import { API_BASE_URL } from '../config/api.config';
 import { Conversation } from '../models/chat/conversation.model';
 import { Message } from '../models/chat/message.model';
 import { User } from '../models/auth/user.model';
+import { UploadFileResponse } from '../models/files/upload-response.model';
+import { UserPresence } from '../models/auth/user-presence.model';
 
 @Injectable({ providedIn: 'root' })
 export class ChatApiService {
@@ -71,5 +73,15 @@ export class ChatApiService {
     return this.http.get<{ count: number }>(
       `${API_BASE_URL}/conversations/${conversationId}/messages/unread-count`
     );
+  }
+
+  uploadFile(file: File) {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<UploadFileResponse>(`${API_BASE_URL}/files/upload`, form);
+  }
+
+  getUserPresence(userId: string) {
+    return this.http.get<UserPresence>(`${API_BASE_URL}/users/${userId}/presence`);
   }
 }

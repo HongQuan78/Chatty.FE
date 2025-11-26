@@ -1,6 +1,7 @@
 <footer class="p-4">
   <form class="flex items-center gap-2 rounded-lg p-2" (ngSubmit)="emit()">
-    <button type="button" class="flex items-center justify-center p-2 rounded-full">
+    <input #fileInput type="file" class="hidden" accept="image/*" (change)="onFileSelected($event)" />
+    <button type="button" class="flex items-center justify-center p-2 rounded-full" (click)="triggerFile()">
       <span class="material-symbols-outlined">add_circle</span>
     </button>
     <input class="flex-1 border-none focus:ring-0" placeholder="Type a message..." type="text"

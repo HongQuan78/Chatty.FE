@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +11,9 @@ import { CommonModule } from '@angular/common';
 })
 export class MessageInputBoxComponent {
   @Output() send = new EventEmitter<string>();
+  @Output() sendFile = new EventEmitter<File>();
   draft = '';
+  @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
 
   emit() {
     const text = this.draft.trim();
@@ -20,5 +22,18 @@ export class MessageInputBoxComponent {
     }
     this.send.emit(text);
     this.draft = '';
+  }
+
+  triggerFile() {
+    this.fileInput?.nativeElement.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.sendFile.emit(file);
+      input.value = '';
+    }
   }
 }
