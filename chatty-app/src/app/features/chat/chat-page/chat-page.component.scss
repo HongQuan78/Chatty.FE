@@ -1,24 +1,13 @@
 :host {
   display: block;
-  --surface: #ffffff;
-  --surface-alt: #f6f8fb;
-  --surface-strong: #eef2ff;
-  --border: #e5e7eb;
-  --text: #0f172a;
-  --muted: #475569;
-  --shadow: rgba(15, 23, 42, 0.08);
-  --panel-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 60%, #f8fafc 100%);
-}
-
-:host-context(.theme-dark) {
-  --surface: #0f172a;
-  --surface-alt: #0b1220;
-  --surface-strong: #111a2c;
-  --border: #1e293b;
-  --text: #e2e8f0;
-  --muted: #cbd5e1;
-  --shadow: rgba(0, 0, 0, 0.5);
-  --panel-bg: linear-gradient(180deg, #0b1220 0%, #10192b 60%, #0b1220 100%);
+  --surface: var(--color-surface);
+  --surface-alt: var(--color-surface-2);
+  --surface-strong: var(--color-surface-3);
+  --border: var(--card-border);
+  --text: var(--app-text);
+  --muted: var(--color-muted);
+  --shadow: var(--shadow-soft);
+  --panel-bg: linear-gradient(180deg, var(--color-surface-2) 0%, var(--color-surface-3) 60%, var(--color-surface-2) 100%);
 }
 
 .chat-page {
@@ -28,10 +17,6 @@
   height: calc(100vh - 56px);
   overflow: hidden;
   color: var(--text);
-}
-
-:host-context(.theme-dark) .chat-page {
-  background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
 }
 
 .chat-shell {
@@ -138,7 +123,7 @@
 
 .composer button {
   border: 1px solid var(--border);
-  background: #6366f1;
+  background: var(--color-primary-soft);
   color: white;
   padding: 10px 12px;
   border-radius: 10px;
@@ -174,7 +159,7 @@
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-soft));
   color: #fff;
   display: grid;
   place-items: center;
@@ -191,8 +176,8 @@
 }
 
 .composer .pill {
-  background: rgba(99, 102, 241, 0.1);
-  color: #4f46e5;
+  background: color-mix(in srgb, var(--color-primary-soft) 12%, transparent);
+  color: var(--color-primary);
   padding: 6px 10px;
   border-radius: 10px;
   font-weight: 700;

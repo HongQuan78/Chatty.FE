@@ -15,6 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class LoginComponent {
   email = '';
   password = '';
+  showPassword = false;
   rememberMe = true;
   submitting = false;
   error = '';
@@ -40,5 +41,9 @@ export class LoginComponent {
         this.error = err?.error?.title || 'Login failed';
       },
     });
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 }

@@ -16,6 +16,8 @@ export class RegisterComponent {
   email = '';
   password = '';
   confirmPassword = '';
+  showPassword = false;
+  showConfirm = false;
   name = '';
   submitting = false;
   error = '';
@@ -47,5 +49,13 @@ export class RegisterComponent {
         this.error = err?.error?.title || 'Registration failed';
       },
     });
+  }
+
+  togglePassword(field: 'main' | 'confirm') {
+    if (field === 'main') {
+      this.showPassword = !this.showPassword;
+    } else {
+      this.showConfirm = !this.showConfirm;
+    }
   }
 }

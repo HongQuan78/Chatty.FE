@@ -1,93 +1,69 @@
 <app-auth-layout>
-  <div class="w-full max-w-md space-y-8">
-    <!-- Header -->
-    <div>
-      <div class="flex flex-wrap justify-between gap-3">
-        <div class="flex w-full flex-col gap-1 text-center">
-          <p class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Welcome Back
-          </p>
-          <p class="text-[#60758a] dark:text-gray-400 text-base font-normal leading-normal">Log in to continue to your
-            account</p>
+  <section class="auth-card">
+    <div class="card-head">
+      <div class="pill">Welcome back</div>
+      <h1>Sign in to Chatty</h1>
+      <p>Access your conversations and settings securely.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="active" type="button">Login</button>
+      <button type="button" (click)="goRegister()">Create account</button>
+    </div>
+
+    <form (ngSubmit)="submit()" class="form" novalidate>
+      <label>
+        <span>Email address</span>
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          [(ngModel)]="email"
+          required
+          autocomplete="email"
+        />
+      </label>
+
+      <label>
+        <div class="row">
+          <span>Password</span>
+          <a class="link" href="#">Forgot password?</a>
         </div>
-      </div>
-    </div>
-    <!-- Segmented Buttons -->
-    <div class="flex py-3">
-      <div
-        class="flex h-12 flex-1 items-center justify-center rounded-lg bg-background-light dark:bg-background-dark p-1">
-        <label
-          class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:bg-primary/10 dark:has-[:checked]:text-primary text-[#60758a] dark:text-gray-400 text-sm font-medium leading-normal transition-all duration-200">
-          <span>Login</span>
-          <input class="invisible w-0" name="auth-toggle" type="radio" value="Login" checked />
-        </label>
-        <label
-          class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:bg-primary/10 dark:has-[:checked]:text-primary text-[#60758a] dark:text-gray-400 text-sm font-medium leading-normal transition-all duration-200">
-          <span class="whitespace-nowrap">Sign Up</span>
-          <input class="invisible w-0" name="auth-toggle" type="radio" value="Sign Up" (change)="goRegister()" />
-        </label>
-      </div>
-    </div>
-    <!-- Form -->
-    <form class="space-y-6" (ngSubmit)="submit()">
-      <!-- Email Field -->
-      <div class="flex flex-wrap items-end gap-4">
-        <label class="flex flex-col min-w-40 flex-1">
-          <p class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal pb-2">Email Address</p>
+        <div class="input-wrap">
           <input
-            class="form-input flex w-full min-w-0 flex-1 rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-background-dark h-12 placeholder:text-[#60758a] p-3 text-base font-normal leading-normal"
-            placeholder="Enter your email" type="email" name="email" [(ngModel)]="email" required />
-        </label>
-      </div>
-      <!-- Password Field -->
-      <div class="flex flex-wrap items-end gap-4">
-        <label class="flex flex-col min-w-40 flex-1">
-          <div class="flex justify-between items-center pb-2">
-            <p class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal">Password</p>
-            <a class="text-sm font-medium text-primary hover:underline" href="#">Forgot Password?</a>
-          </div>
-          <div class="relative w-full">
-            <input
-              class="form-input flex w-full min-w-0 flex-1 rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-background-dark h-12 placeholder:text-[#60758a] p-3 pr-10 text-base font-normal leading-normal"
-              placeholder="Enter your password" type="password" name="password" [(ngModel)]="password" required />
-            <button type="button"
-              class="absolute inset-y-0 right-0 flex items-center pr-3 text-[#60758a] dark:text-gray-400">
-              <span class="material-symbols-outlined text-xl">visibility_off</span>
-            </button>
-          </div>
-        </label>
-      </div>
-      <div class="pt-1">
-        <label
-          class="flex items-center gap-4 rounded-2xl border border-[#dbe0e6] dark:border-gray-700 bg-white/90 dark:bg-background-dark px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
-        >
-          <div class="flex flex-col leading-tight">
-            <span class="text-sm font-semibold text-[#111418] dark:text-gray-100">Remember me</span>
-            <span class="text-xs text-[#60758a] dark:text-gray-400">Stay signed in on this device</span>
-          </div>
-          <span class="ml-auto relative inline-flex h-7 w-12 items-center justify-center">
-            <input
-              type="checkbox"
-              name="rememberMe"
-              [(ngModel)]="rememberMe"
-              class="peer sr-only"
-            />
-            <span
-              class="h-7 w-12 rounded-full border border-[#cfd5df] bg-[radial-gradient(circle_at_30%_30%,#dfe5f0_0,#c6cbd7_55%,#b9beca_100%)] dark:bg-gray-700 dark:border-gray-600 transition-all duration-200 shadow-inner peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#2563eb] peer-checked:to-[#4f8bff] peer-checked:shadow-[0_8px_18px_rgba(64,80,255,0.35)]"
-            ></span>
-            <span
-              class="absolute left-1 h-5 w-5 rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] transition-transform duration-200 peer-checked:translate-x-5 peer-checked:shadow-[0_6px_14px_rgba(0,0,0,0.16)]"
-            ></span>
-          </span>
-        </label>
-      </div>
-      <!-- CTA Button -->
-      <div class="py-2">
-        <button type="submit" [disabled]="submitting"
-          class="flex h-12 w-full items-center justify-center rounded-lg bg-primary px-6 text-base font-semibold text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:ring-offset-background-dark transition-colors duration-200">
-          {{ submitting ? 'Signing in...' : 'Log In' }}
-        </button>
-        <p class="text-sm text-red-600 mt-2" *ngIf="error">{{ error }}</p>
-      </div>
+            [type]="showPassword ? 'text' : 'password'"
+            name="password"
+            placeholder="Enter your password"
+            [(ngModel)]="password"
+            required
+            autocomplete="current-password"
+          />
+          <button type="button" class="icon-btn" (click)="togglePassword()" [attr.aria-pressed]="showPassword">
+            <span class="material-symbols-outlined">
+              {{ showPassword ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+      </label>
+
+      <label class="remember">
+        <input type="checkbox" name="rememberMe" [(ngModel)]="rememberMe" />
+        <div>
+          <strong>Remember me</strong>
+          <small>Stay signed in on this device</small>
+        </div>
+      </label>
+
+      <button type="submit" [disabled]="submitting">
+        {{ submitting ? 'Signing in...' : 'Continue' }}
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
     </form>
-  </div>
+
+    <p class="footer">
+      No account yet?
+      <button type="button" class="link-btn" (click)="goRegister()">Create one</button>
+    </p>
+  </section>
 </app-auth-layout>

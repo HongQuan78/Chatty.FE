@@ -1,17 +1,7 @@
 :host {
-  --surface: #ffffff;
-  --surface-alt: #f8fafc;
-  --border: #e5e7eb;
-}
-
-:host-context(.theme-dark) {
-  --surface: #121a26;
-  --surface-alt: #0d1624;
-  --border: #1f2937;
-}
-
-.chat-bubble {
-  color: #ffffff;
+  --surface: var(--color-surface);
+  --surface-alt: var(--color-surface-2);
+  --border: var(--card-border);
 }
 
 .chat-bubble {
@@ -23,6 +13,7 @@
   align-items: flex-end;
   gap: 10px;
   z-index: 60;
+  color: var(--app-text);
 }
 
 .fab {
@@ -30,11 +21,11 @@
   height: 64px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-soft));
   color: #ffffff;
   display: grid;
   place-items: center;
-  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.35);
+  box-shadow: var(--shadow-pop);
   cursor: pointer;
   position: relative;
   transition: transform 140ms ease, box-shadow 140ms ease;
@@ -42,7 +33,7 @@
 
 .fab:hover {
   transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 14px 32px rgba(79, 70, 229, 0.45);
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--color-primary) 60%, rgba(0, 0, 0, 0.25));
 }
 
 .fab__icon {
@@ -57,7 +48,7 @@
   min-width: 22px;
   padding: 4px 6px;
   border-radius: 999px;
-  background: #ef4444;
+  background: var(--color-danger);
   color: #ffffff;
   font-weight: 700;
   font-size: 12px;
@@ -66,11 +57,11 @@
 
 .panel {
   width: min(640px, calc(100vw - 32px));
-  background: var(--surface, #ffffff);
-  border-radius: 16px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--border, #e5e7eb);
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-strong);
   display: grid;
   grid-template-rows: auto 1fr;
 }
@@ -80,7 +71,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-strong));
   color: #ffffff;
 }
 
@@ -96,7 +87,7 @@
 
 .panel__close {
   border: none;
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, #ffffff 18%, transparent);
   color: #ffffff;
   width: 28px;
   height: 28px;
@@ -109,13 +100,13 @@
   display: grid;
   grid-template-columns: 240px 1fr;
   grid-template-rows: 1fr;
-  background: var(--surface-alt, #f8fafc);
+  background: var(--surface-alt);
   height: min(560px, 70vh);
 }
 
 .panel__sidebar {
-  border-right: 1px solid var(--border, #e5e7eb);
-  background: var(--surface, #ffffff);
+  border-right: 1px solid var(--border);
+  background: var(--surface);
 }
 
 .panel__chat {
@@ -135,7 +126,7 @@ app-chat-window ::ng-deep .window {
 }
 
 .input {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border);
 }
 
 @media (max-width: 600px) {
@@ -161,6 +152,6 @@ app-chat-window ::ng-deep .window {
 
   .panel__sidebar {
     border-right: none;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border);
   }
 }
