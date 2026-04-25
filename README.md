@@ -1,73 +1,81 @@
-# React + TypeScript + Vite
+# ChatStream Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ChatStream is a high-fidelity, real-time messaging platform frontend built with **React 19**, **Vite**, and **Tailwind CSS**. It features a modern "Indigo Professional" design system with glassmorphism aesthetics and smooth animated backgrounds.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Premium UI/UX**: Designed with a focus on rich aesthetics, featuring fluid gradients and glassmorphism components.
+- **Modern Tech Stack**: Built using React 19 and TypeScript for a robust development experience.
+- **Client-Side Routing**: Seamless transitions between authentication screens using `react-router-dom`.
+- **Responsive Design**: Fully responsive layout optimized for all screen sizes.
+- **Animated Backgrounds**: Custom blob-style animated backgrounds for a dynamic user experience.
+- **High Performance**: Optimized with Vite for extremely fast Hot Module Replacement (HMR).
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite 6](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (CDN-based with custom design system tokens)
+- **Routing**: [React Router v7](https://reactrouter.com/)
+- **Icons**: [Material Symbols](https://fonts.google.com/icons)
+- **Fonts**: Inter & Manrope
 
-## Expanding the ESLint configuration
+## 📦 Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/HongQuan78/Chatty.FE.git
+   cd Chatty.FE
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser to `http://localhost:5173`.
+
+## 📂 Project Structure
+
+```text
+Chatty.FE/
+├── src/
+│   ├── App.tsx          # Main entry point with routing configuration
+│   ├── Login.tsx        # Login screen component
+│   ├── Register.tsx     # Registration screen component
+│   ├── main.tsx         # React DOM initialization
+│   └── index.css        # Global styles
+├── index.html           # HTML template with Tailwind & Design System config
+├── package.json         # Project dependencies and scripts
+└── tsconfig.json        # TypeScript configuration
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🎨 Design System
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The project utilizes a custom **Indigo Professional** design system configured via Tailwind:
+- **Primary Color**: `#1f108e` (Electric Indigo)
+- **Secondary Color**: `#4648d4`
+- **Typography**: `Manrope` for headings, `Inter` for body text.
+- **Aesthetic**: Glassmorphism with `backdrop-blur-xl` and `white/80` opacity cards.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🤝 Backend Integration
+
+This frontend is designed to work with the **Chatty.BE** (.NET 10) backend.
+- Repo: [HongQuan78/Chatty.BE](https://github.com/HongQuan78/Chatty.BE)
+- API Docs: `http://localhost:8080/swagger/index.html` (Local dev)
+
+## 📄 License
+
+This project is licensed under the MIT License.
