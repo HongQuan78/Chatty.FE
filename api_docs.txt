@@ -1,0 +1,35 @@
+API Overview
+Authentication uses Bearer JWT. Endpoints marked [auth] require an access token in Authorization: Bearer <token>.
+
+Auth (/api/auth)
+POST /register - Register user with userName, email, password; returns user identity data.
+POST /login - Returns accessToken, refreshToken, and expiration windows.
+POST /change-password - Update password for a given userId; forbids when caller is not that user. [No [Authorize] attribute applied; relies on caller-provided UserId].
+POST /logout - Revokes a specific refresh token for userId.
+POST /refresh - Exchanges refresh token for new access/refresh pair; revokes reused/expired tokens.
+[auth] POST /logout-all-sessions - Revokes all refresh tokens for current user.
+[auth] GET /sessions - Lists active (non-expired) refresh tokens for current user.
+Users (/api/users)
+[auth] GET /{id} - Get user by id.
+[auth] GET /by-username/{userName} - Get user by username.
+[auth] GET /search?keyword=... - Search by username/email/display name (case-insensitive LIKE).
+[auth] PUT /{id} - Update current user profile (display name, avatar URL, bio); forbids updating others.
+Conversations (/api/conversations)
+[auth] POST /private - Create or return an existing private conversation between two users.
+[auth] POST /group - Create group conversation with owner and participant ids.
+[auth] POST /{id}/participants - Add participant to conversation.
+[auth] DELETE /{id}/participants/{userId} - Remove participant.
+[auth] GET - List conversations for userId (ordered by last activity).
+[auth] GET /{id} - Get conversation with participants.
+Messages (/api/conversations/{conversationId}/messages)
+[auth] POST / - Send message; body includes content, type (Text|Image|File), optional attachments.
+[auth] GET / - Paginated messages (page, pageSize).
+[auth] PUT /read - Mark all conversation messages as read for current user.
+[auth] GET /unread-count - Count unread messages for current user in the conversation.
+Files (/api/files)
+[auth] POST /upload - Multipart upload (file form field); returns { "fileUrl": "..." } from Cloudinary.
+SignalR Hub (/hubs/chat)
+Authentication: hub connections require a valid JWT access token ([Authorize] + endpoint authorization policy).
+Groups: connection joins a group keyed by user id; server also broadcasts to conversation id groups.
+Client methods exposed by IChatClient: ReceiveMessage, MessagesRead(conversationId, readerUserId, messageIds), UserJoinedConversation, UserLeftConversation.
+Scale-out: when RedisCache__Enabled=true, SignalR uses Redis backplane (Microsoft.AspNetCore.SignalR.StackExchangeRedis) so events propagate across multiple API instances.

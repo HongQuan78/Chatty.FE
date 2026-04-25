@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatStream - Real-Time Messaging Platform</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#d8e3fb",
+                        "primary-container": "#3730a3",
+                        "on-primary": "#ffffff",
+                        "on-background": "#111c2d",
+                        "surface-tint": "#544fc0",
+                        "on-surface": "#111c2d",
+                        "error-container": "#ffdad6",
+                        "outline": "#777584",
+                        "on-primary-fixed-variant": "#3b35a7",
+                        "on-surface-variant": "#464553",
+                        "tertiary": "#2a2d2f",
+                        "secondary-fixed": "#e1e0ff",
+                        "surface-container-highest": "#d8e3fb",
+                        "outline-variant": "#c8c4d5",
+                        "on-primary-container": "#a9a7ff",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#dee8ff",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-tertiary-container": "#adb0b2",
+                        "background": "#f9f9ff",
+                        "secondary-container": "#6063ee",
+                        "surface-bright": "#f9f9ff",
+                        "surface": "#f9f9ff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#0f0069",
+                        "inverse-primary": "#c3c0ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "inverse-on-surface": "#ecf1ff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "tertiary-container": "#404345",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-secondary-container": "#fffbff",
+                        "surface-container": "#e7eeff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#cfdaf2",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f0f3ff",
+                        "inverse-surface": "#263143",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#1f108e",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-secondary-fixed": "#07006c",
+                        "on-error": "#ffffff",
+                        "secondary": "#4648d4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "stack-lg": "2rem",
+                        "sidebar-width": "280px",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "chat-max-width": "1000px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "meta": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h2": ["Manrope"],
+                        "h1": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "meta": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h2": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        }
+                    },
+                    animation: {
+                        blob: "blob 7s infinite"
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+    </style>
+  </head>
+  <body class="bg-background min-h-screen flex flex-col">
+    <div id="root" class="flex-grow flex flex-col"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
