@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    navigate('/dashboard');
   };
 
   return (
     <>
-      <main className="flex-grow flex items-center justify-center px-gutter py-stack-lg relative overflow-hidden bg-gradient-to-br from-indigo-50 via-slate-50 to-purple-50">
+      <main className="min-h-screen flex items-center justify-center px-gutter py-stack-lg relative overflow-hidden bg-gradient-to-br from-indigo-50 via-slate-50 to-purple-50">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
         <div className="absolute top-0 -right-4 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-fuchsia-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
