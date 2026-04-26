@@ -1,13 +1,46 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { authService } from './api/authService';
 
 const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (error) setError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await authService.register({
+        userName: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,6 +69,20 @@ const Register: React.FC = () => {
               <h2 className="font-h2 text-h2 text-on-surface mb-1">Create Account</h2>
               <p className="font-body-md text-body-md text-on-surface-variant">Join your professional team today.</p>
             </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-error-container text-on-error-container rounded-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <span className="material-symbols-outlined text-[20px]">error</span>
+                <p className="font-body-sm text-body-sm">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-6 p-4 bg-green-100 text-green-800 border border-green-200 rounded-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                <p className="font-body-sm text-body-sm">Registration successful! Redirecting to login...</p>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label className="font-label-sm text-label-sm text-on-surface-variant block" htmlFor="username">
@@ -52,6 +99,9 @@ const Register: React.FC = () => {
                     placeholder="j.doe"
                     required
                     type="text"
+                    value={formData.username}
+                    onChange={handleChange}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -70,6 +120,9 @@ const Register: React.FC = () => {
                     placeholder="name@company.com"
                     required
                     type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -88,6 +141,9 @@ const Register: React.FC = () => {
                     placeholder="••••••••"
                     required
                     type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={isLoading}
                   />
                   <button
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant transition-colors"
@@ -102,10 +158,20 @@ const Register: React.FC = () => {
                 <p className="font-meta text-meta text-on-surface-variant pt-1">Must be at least 8 characters long.</p>
               </div>
               <button
-                className="w-full py-3.5 bg-primary-container text-on-primary font-body-lg text-body-lg rounded-lg hover:opacity-90 active:scale-[0.98] transition-all duration-200 shadow-sm"
+                className={`w-full py-3.5 bg-primary-container text-on-primary font-body-lg text-body-lg rounded-lg transition-all duration-200 shadow-sm flex items-center justify-center gap-2 ${
+                  isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.98]'
+                }`}
                 type="submit"
+                disabled={isLoading}
               >
-                Register
+                {isLoading ? (
+                  <>
+                    <span className="w-5 h-5 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                    Registering...
+                  </>
+                ) : (
+                  'Register'
+                )}
               </button>
             </form>
             <div className="mt-8 pt-8 border-t border-outline-variant text-center">
