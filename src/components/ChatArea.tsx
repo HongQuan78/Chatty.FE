@@ -68,7 +68,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-5 py-4">
+      <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-on-surface-variant/40">
             <div className="w-20 h-20 bg-primary-container/8 rounded-full flex items-center justify-center mb-4">
@@ -89,11 +89,13 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           messages.map((msg, idx) => {
             const prevMsg = idx > 0 ? messages[idx - 1] : null;
             const isConsecutive = prevMsg !== null && prevMsg.sender === msg.sender;
+            const isOwnMessage = msg.sender === 'John Doe';
             return (
               <MessageItem
                 key={msg.id}
                 message={msg}
                 isConsecutive={isConsecutive}
+                isOwnMessage={isOwnMessage}
               />
             );
           })
