@@ -1,10 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
   onToggleSidebar: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
+  const navigate = useNavigate();
+
   return (
     <nav className="h-14 bg-primary-container flex items-center justify-between px-4 flex-shrink-0 z-30 shadow-md">
       {/* Left Section */}
@@ -43,13 +46,18 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           <span className="material-symbols-outlined text-xl">notifications</span>
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-primary-container"></span>
         </button>
-        <button className="p-2 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-white/10 transition-colors" aria-label="Settings">
+        <button 
+          onClick={() => navigate('/settings')}
+          className="p-2 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-white/10 transition-colors" 
+          aria-label="Settings"
+        >
           <span className="material-symbols-outlined text-xl">settings</span>
         </button>
         <div className="ml-2 pl-2 border-l border-white/15">
           <img
             src="https://i.pravatar.cc/150?u=current"
             alt="Profile"
+            onClick={() => navigate('/settings')}
             className="w-8 h-8 rounded-full ring-2 ring-white/20 cursor-pointer hover:ring-white/40 transition-all object-cover"
           />
         </div>

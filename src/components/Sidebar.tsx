@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       ) : null}
 
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-[300px] bg-white border-r border-outline-variant/30 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-[300px] bg-surface-container-lowest border-r border-outline-variant/30 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -96,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <img src={conv.avatar} alt={conv.name} className="w-11 h-11 rounded-full object-cover" />
                   )}
                   {conv.status ? (
-                    <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ring-2 ring-white ${STATUS_COLORS[conv.status]}`}></span>
+                    <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ring-2 ring-surface-container-lowest ${STATUS_COLORS[conv.status]}`}></span>
                   ) : null}
                 </div>
 
@@ -137,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center gap-2.5">
             <div className="relative flex-shrink-0">
               <img src="https://i.pravatar.cc/150?u=current" alt="Profile" className="w-9 h-9 rounded-full object-cover" />
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-white"></span>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-surface-container-lowest"></span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-body-md text-[13px] font-semibold text-on-surface truncate leading-tight">John Doe</p>

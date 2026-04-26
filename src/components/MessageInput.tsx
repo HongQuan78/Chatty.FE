@@ -35,7 +35,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, channelName 
 
   return (
     <div className="px-4 pb-4 pt-2 flex-shrink-0">
-      <form onSubmit={handleSubmit} className="bg-white border border-outline-variant/50 rounded-xl shadow-sm focus-within:border-primary-container/40 focus-within:shadow-md transition-all">
+      <form onSubmit={handleSubmit} className="bg-surface-container-lowest border border-outline-variant/50 rounded-xl shadow-sm focus-within:border-primary-container/40 focus-within:shadow-md transition-all">
         <div className="flex items-end px-3 py-2 gap-1">
           <button type="button" className="p-1.5 text-outline/60 hover:text-on-surface rounded-lg hover:bg-surface-container-highest transition-colors flex-shrink-0" aria-label="Add attachment">
             <span className="material-symbols-outlined text-xl">add</span>

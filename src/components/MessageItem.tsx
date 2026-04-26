@@ -26,7 +26,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isConsecutive = fals
           </p>
         </div>
         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center absolute right-4 -top-3">
-          <div className="flex bg-white border border-outline-variant/60 rounded-lg shadow-lg">
+          <div className="flex bg-surface-container border border-outline-variant/60 rounded-lg shadow-lg">
             <button className="p-1.5 text-outline hover:text-primary hover:bg-primary/5 rounded-l-lg transition-colors" aria-label="Add reaction">
               <span className="material-symbols-outlined text-[16px]">add_reaction</span>
             </button>
@@ -55,7 +55,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isConsecutive = fals
         </p>
       </div>
       <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center absolute right-4 -top-3">
-        <div className="flex bg-white border border-outline-variant/60 rounded-lg shadow-lg">
+        <div className="flex bg-surface-container border border-outline-variant/60 rounded-lg shadow-lg">
           <button className="p-1.5 text-outline hover:text-primary hover:bg-primary/5 rounded-l-lg transition-colors" aria-label="Add reaction">
             <span className="material-symbols-outlined text-[16px]">add_reaction</span>
           </button>

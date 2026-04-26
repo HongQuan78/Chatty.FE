@@ -29,7 +29,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full bg-background">
       {/* Conversation Header */}
-      <header className="h-14 flex items-center justify-between px-5 bg-white border-b border-outline-variant/20 flex-shrink-0 z-10">
+      <header className="h-14 flex items-center justify-between px-5 bg-surface-container-lowest border-b border-outline-variant/20 flex-shrink-0 z-10">
         <div className="flex items-center gap-3 min-w-0">
           {/* Avatar */}
           <div className="relative flex-shrink-0">
@@ -41,7 +41,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
               <img src={conversationAvatar} alt={conversationName} className="w-9 h-9 rounded-full object-cover" />
             ) : null}
             {status === 'online' ? (
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-white"></span>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-surface-container-lowest"></span>
             ) : null}
           </div>
           <div className="min-w-0">

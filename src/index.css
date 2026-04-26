@@ -1,4 +1,106 @@
 :root {
+  --color-surface-variant: 216 227 251;
+  --color-primary-container: 55 48 163;
+  --color-on-primary: 255 255 255;
+  --color-on-background: 17 28 45;
+  --color-surface-tint: 84 79 192;
+  --color-on-surface: 17 28 45;
+  --color-error-container: 255 218 214;
+  --color-outline: 119 117 132;
+  --color-on-primary-fixed-variant: 59 53 167;
+  --color-on-surface-variant: 70 69 83;
+  --color-tertiary: 42 45 47;
+  --color-secondary-fixed: 225 224 255;
+  --color-surface-container-highest: 216 227 251;
+  --color-outline-variant: 200 196 213;
+  --color-on-primary-container: 169 167 255;
+  --color-primary-fixed: 226 223 255;
+  --color-surface-container-lowest: 255 255 255;
+  --color-surface-container-high: 222 232 255;
+  --color-on-secondary-fixed-variant: 47 46 190;
+  --color-on-tertiary-container: 173 176 178;
+  --color-background: 249 249 255;
+  --color-secondary-container: 96 99 238;
+  --color-surface-bright: 249 249 255;
+  --color-surface: 249 249 255;
+  --color-tertiary-fixed: 224 227 229;
+  --color-on-error-container: 147 0 10;
+  --color-on-primary-fixed: 15 0 105;
+  --color-inverse-primary: 195 192 255;
+  --color-secondary-fixed-dim: 192 193 255;
+  --color-inverse-on-surface: 236 241 255;
+  --color-primary-fixed-dim: 195 192 255;
+  --color-tertiary-container: 64 67 69;
+  --color-on-tertiary-fixed: 25 28 30;
+  --color-on-secondary-container: 255 251 255;
+  --color-surface-container: 231 238 255;
+  --color-on-secondary: 255 255 255;
+  --color-surface-dim: 207 218 242;
+  --color-error: 186 26 26;
+  --color-surface-container-low: 240 243 255;
+  --color-inverse-surface: 38 49 67;
+  --color-tertiary-fixed-dim: 196 199 201;
+  --color-on-tertiary: 255 255 255;
+  --color-primary: 31 16 142;
+  --color-on-tertiary-fixed-variant: 68 71 73;
+  --color-on-secondary-fixed: 7 0 108;
+  --color-on-error: 255 255 255;
+  --color-secondary: 70 72 212;
+}
+
+html.dark {
+  --color-surface-variant: 67 74 91;
+  --color-primary-container: 67 56 202;
+  --color-on-primary: 255 255 255;
+  --color-on-background: 226 232 240;
+  --color-surface-tint: 84 79 192;
+  --color-on-surface: 226 232 240;
+  --color-error-container: 255 218 214;
+  --color-outline: 142 148 160;
+  --color-on-primary-fixed-variant: 59 53 167;
+  --color-on-surface-variant: 192 197 208;
+  --color-tertiary: 42 45 47;
+  --color-secondary-fixed: 225 224 255;
+  --color-surface-container-highest: 52 58 70;
+  --color-outline-variant: 68 74 87;
+  --color-on-primary-container: 224 231 255;
+  --color-primary-fixed: 226 223 255;
+  --color-surface-container-lowest: 15 17 21;
+  --color-surface-container-high: 42 47 58;
+  --color-on-secondary-fixed-variant: 47 46 190;
+  --color-on-tertiary-container: 173 176 178;
+  --color-background: 20 22 27;
+  --color-secondary-container: 96 99 238;
+  --color-surface-bright: 20 22 27;
+  --color-surface: 20 22 27;
+  --color-tertiary-fixed: 224 227 229;
+  --color-on-error-container: 147 0 10;
+  --color-on-primary-fixed: 15 0 105;
+  --color-inverse-primary: 195 192 255;
+  --color-secondary-fixed-dim: 192 193 255;
+  --color-inverse-on-surface: 236 241 255;
+  --color-primary-fixed-dim: 195 192 255;
+  --color-tertiary-container: 64 67 69;
+  --color-on-tertiary-fixed: 25 28 30;
+  --color-on-secondary-container: 255 251 255;
+  --color-surface-container: 32 36 45;
+  --color-on-secondary: 255 255 255;
+  --color-surface-dim: 13 15 19;
+  --color-error: 186 26 26;
+  --color-surface-container-low: 26 29 36;
+  --color-inverse-surface: 38 49 67;
+  --color-tertiary-fixed-dim: 196 199 201;
+  --color-on-tertiary: 255 255 255;
+  --color-primary: 129 140 248;
+  --color-on-tertiary-fixed-variant: 68 71 73;
+  --color-on-secondary-fixed: 7 0 108;
+  --color-on-error: 255 255 255;
+  --color-secondary: 70 72 212;
+}
+
+
+
+:root {
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -30,24 +132,24 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+html.dark {
+  --text: #9ca3af;
+  --text-h: #f3f4f6;
+  --bg: #16171d;
+  --border: #2e303a;
+  --code-bg: #1f2028;
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.5);
+  --social-bg: rgba(47, 48, 58, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+  color-scheme: dark;
+}
+
+html.dark #social .button-icon {
+  filter: invert(1) brightness(2);
 }
 
 #root {

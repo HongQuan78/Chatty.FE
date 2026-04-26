@@ -17,7 +17,7 @@ const Login: React.FC = () => {
         <div className="absolute top-0 -right-4 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-fuchsia-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
         
-        <div className="relative w-full max-w-[480px] bg-white/80 backdrop-blur-xl border border-white/50 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="relative w-full max-w-[480px] bg-surface-container-lowest/80 backdrop-blur-xl border border-surface-variant/50 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="relative h-48 bg-primary-container overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-container to-secondary-container opacity-90"></div>
             <img
@@ -46,7 +46,7 @@ const Login: React.FC = () => {
                     mail
                   </span>
                   <input
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/20 focus:border-primary-container transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/20 focus:border-primary-container transition-all"
                     id="email"
                     name="email"
                     placeholder="name@company.com"
@@ -69,7 +69,7 @@ const Login: React.FC = () => {
                     lock
                   </span>
                   <input
-                    className="w-full pl-10 pr-12 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/20 focus:border-primary-container transition-all"
+                    className="w-full pl-10 pr-12 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/20 focus:border-primary-container transition-all"
                     id="password"
                     name="password"
                     placeholder="••••••••"
