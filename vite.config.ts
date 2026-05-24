@@ -7,9 +7,25 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://localhost:7277',
         changeOrigin: true,
         secure: false,
+      },
+      '/uploads': {
+        target: 'https://localhost:7277',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/files': {
+        target: 'https://localhost:7277',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/hubs': {
+        target: 'https://localhost:7277',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
       },
     },
   },

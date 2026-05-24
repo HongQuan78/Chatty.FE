@@ -1,64 +1,67 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { DEFAULT_AVATAR_URL } from '../utils/avatar';
 
 interface NavbarProps {
   onToggleSidebar: () => void;
+  currentUserAvatar: string;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
+const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, currentUserAvatar }) => {
   const navigate = useNavigate();
 
   return (
-    <nav className="h-14 bg-primary-container flex items-center justify-between px-4 flex-shrink-0 z-30 shadow-md">
-      {/* Left Section */}
+    <nav className="h-16 flex items-center justify-between px-4 sm:px-5 flex-shrink-0 z-30 bg-white/82 border-b border-[#ffd9e5] shadow-[0_12px_34px_rgba(238,128,166,0.14)] backdrop-blur-xl dark:bg-[#231c27]/86 dark:border-[#5a3c4b] dark:shadow-[0_12px_34px_rgba(0,0,0,0.24)]">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden p-1.5 rounded-lg text-on-primary/80 hover:text-on-primary hover:bg-white/10 transition-colors"
-          aria-label="Toggle sidebar"
+          className="xl:hidden p-2 rounded-2xl text-[#d94676] hover:bg-[#fff0f6] transition-colors dark:text-[#ffb3c9] dark:hover:bg-[#4a2f3c]"
+          aria-label="Mở danh sách chat"
         >
           <span className="material-symbols-outlined text-xl">menu</span>
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white/15 rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-primary text-xl">hub</span>
+          <div className="w-10 h-10 bg-[#ffd9e5] rounded-2xl flex items-center justify-center text-[#d94676] dark:bg-[#4a2f3c] dark:text-[#ffb3c9]">
+            <span className="material-symbols-outlined text-xl">forum</span>
           </div>
-          <h1 className="font-h2 text-[18px] text-on-primary tracking-tight hidden sm:block">ChatStream</h1>
+          <h1 className="font-h2 text-[19px] text-[#47313d] tracking-tight hidden sm:block dark:text-[#fff4f8]">Chatty</h1>
         </div>
       </div>
 
-      {/* Center Search */}
-      <div className="flex-1 max-w-md mx-4">
+      <div className="flex-1 max-w-md mx-4 hidden sm:block">
         <div className="relative">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-primary/40 text-[18px]">search</span>
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#d98ca7] text-[18px] dark:text-[#ffb3c9]">
+            search
+          </span>
           <input
             type="text"
-            placeholder="Search messages, people, channels..."
-            className="w-full pl-9 pr-4 py-1.5 bg-white/10 border border-white/10 rounded-lg text-on-primary placeholder-on-primary/40 font-body-md text-[13px] focus:outline-none focus:bg-white/15 focus:border-white/20 transition-all"
+            placeholder="Tìm tin nhắn, bạn bè..."
+            className="w-full pl-11 pr-4 py-2.5 bg-[#fff8fb] border border-[#f5c9d7] rounded-2xl text-[#4b3d46] placeholder:text-[#b99aaa] font-body-md text-[13px] focus:outline-none focus:bg-white focus:border-[#ff8fb0] focus:ring-4 focus:ring-[#ffd9e5] transition-all dark:bg-[#211a25] dark:border-[#5a3c4b] dark:text-[#fff4f8] dark:placeholder:text-[#d8bdca]/70 dark:focus:bg-[#2c2430] dark:focus:border-[#ff8fb0] dark:focus:ring-[#4a2f3c]"
           />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-on-primary/30 text-[11px] font-mono border border-white/15 rounded px-1.5 py-0.5 hidden md:inline">⌘K</kbd>
         </div>
       </div>
 
-      {/* Right Section */}
       <div className="flex items-center gap-1">
-        <button className="p-2 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-white/10 transition-colors relative" aria-label="Notifications">
+        <button className="p-2 rounded-2xl text-[#9f7085] hover:text-[#d94676] hover:bg-[#fff0f6] transition-colors relative dark:text-[#d8bdca] dark:hover:text-[#ffb3c9] dark:hover:bg-[#4a2f3c]" aria-label="Thông báo">
           <span className="material-symbols-outlined text-xl">notifications</span>
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-primary-container"></span>
+          <span className="absolute top-2 right-2 w-2 h-2 bg-[#ff7fa3] rounded-full ring-2 ring-white dark:ring-[#231c27]"></span>
         </button>
-        <button 
+        <button
           onClick={() => navigate('/settings')}
-          className="p-2 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-white/10 transition-colors" 
-          aria-label="Settings"
+          className="p-2 rounded-2xl text-[#9f7085] hover:text-[#d94676] hover:bg-[#fff0f6] transition-colors dark:text-[#d8bdca] dark:hover:text-[#ffb3c9] dark:hover:bg-[#4a2f3c]"
+          aria-label="Cài đặt"
         >
           <span className="material-symbols-outlined text-xl">settings</span>
         </button>
-        <div className="ml-2 pl-2 border-l border-white/15">
+        <div className="ml-2 pl-2 border-l border-[#ffd9e5] dark:border-[#5a3c4b]">
           <img
-            src="https://i.pravatar.cc/150?u=current"
-            alt="Profile"
+            src={currentUserAvatar}
+            alt="Hồ sơ"
             onClick={() => navigate('/settings')}
-            className="w-8 h-8 rounded-full ring-2 ring-white/20 cursor-pointer hover:ring-white/40 transition-all object-cover"
+            onError={(event) => {
+              event.currentTarget.src = DEFAULT_AVATAR_URL;
+            }}
+            className="w-9 h-9 rounded-2xl ring-2 ring-[#ffd9e5] cursor-pointer hover:ring-[#ff8fb0] transition-all object-cover dark:ring-[#5a3c4b]"
           />
         </div>
       </div>

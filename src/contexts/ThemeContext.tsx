@@ -1,36 +1,40 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'Light' | 'Dark' | 'System';
+type ResolvedTheme = 'Light' | 'Dark';
 
 interface ThemeContextType {
   theme: Theme;
+  resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+const getSystemTheme = (): ResolvedTheme => (
+  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light'
+);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('theme-preference') as Theme;
     return saved || 'System';
   });
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => (
+    theme === 'System' ? getSystemTheme() : theme
+  ));
 
   useEffect(() => {
     localStorage.setItem('theme-preference', theme);
     
     const root = window.document.documentElement;
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const nextResolvedTheme = theme === 'System' ? getSystemTheme() : theme;
     
     root.classList.remove('light', 'dark');
-
-    if (theme === 'Dark' || (theme === 'System' && systemPrefersDark)) {
-      root.classList.add('dark');
-    } else {
-      root.classList.add('light');
-    }
+    root.classList.add(nextResolvedTheme.toLowerCase());
+    setResolvedTheme(nextResolvedTheme);
   }, [theme]);
 
-  // Listen for system theme changes if set to System
   useEffect(() => {
     if (theme !== 'System') return;
 
@@ -38,11 +42,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const handleChange = (e: MediaQueryListEvent) => {
       const root = window.document.documentElement;
       root.classList.remove('light', 'dark');
-      if (e.matches) {
-        root.classList.add('dark');
-      } else {
-        root.classList.add('light');
-      }
+      const nextResolvedTheme = e.matches ? 'Dark' : 'Light';
+      root.classList.add(nextResolvedTheme.toLowerCase());
+      setResolvedTheme(nextResolvedTheme);
     };
 
     mediaQuery.addEventListener('change', handleChange);
@@ -50,7 +52,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

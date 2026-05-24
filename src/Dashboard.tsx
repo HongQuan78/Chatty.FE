@@ -1,153 +1,493 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
-import type { Conversation } from './components/Sidebar';
-import type { Message } from './components/MessageItem';
-
-const INITIAL_CONVERSATIONS: Conversation[] = [
-  {
-    id: 'c-1',
-    name: 'Alice Nguyen',
-    avatar: 'https://i.pravatar.cc/150?u=alice',
-    lastMessage: 'Can you review my PR for the dashboard?',
-    time: '11:01 AM',
-    unread: 2,
-    isGroup: false,
-    status: 'online',
-  },
-  {
-    id: 'c-2',
-    name: 'Engineering Team',
-    avatar: '',
-    lastMessage: 'Alice: Should we add Storybook?',
-    time: '10:15 AM',
-    unread: 3,
-    isGroup: true,
-  },
-  {
-    id: 'c-3',
-    name: 'Bob Smith',
-    avatar: 'https://i.pravatar.cc/150?u=bob',
-    lastMessage: 'The backdrop-blur looks amazing 🎨',
-    time: '10:06 AM',
-    unread: 0,
-    isGroup: false,
-    status: 'online',
-  },
-  {
-    id: 'c-4',
-    name: 'Design Review',
-    avatar: '',
-    lastMessage: 'Charlie: Let\'s finalize the tokens',
-    time: 'Yesterday',
-    unread: 0,
-    isGroup: true,
-  },
-  {
-    id: 'c-5',
-    name: 'Charlie Lee',
-    avatar: 'https://i.pravatar.cc/150?u=charlie',
-    lastMessage: 'Great work everyone!',
-    time: 'Yesterday',
-    unread: 0,
-    isGroup: false,
-    status: 'away',
-  },
-  {
-    id: 'c-6',
-    name: 'Diana Park',
-    avatar: 'https://i.pravatar.cc/150?u=diana',
-    lastMessage: 'See you at the standup',
-    time: 'Mon',
-    unread: 0,
-    isGroup: false,
-    status: 'offline',
-  },
-];
-
-const INITIAL_MESSAGES: Record<string, Message[]> = {
-  'c-1': [
-    { id: '101', sender: 'Alice Nguyen', avatar: 'https://i.pravatar.cc/150?u=alice', time: '11:00 AM', content: 'Hey! Can you review my PR for the dashboard layout? I\'ve pushed the changes.' },
-    { id: '102', sender: 'Alice Nguyen', avatar: 'https://i.pravatar.cc/150?u=alice', time: '11:01 AM', content: 'Can you review my PR for the dashboard?' },
-  ],
-  'c-2': [
-    { id: '201', sender: 'Alice Nguyen', avatar: 'https://i.pravatar.cc/150?u=alice', time: '10:00 AM', content: 'Hey team! How is the new design system integration coming along?' },
-    { id: '202', sender: 'Bob Smith', avatar: 'https://i.pravatar.cc/150?u=bob', time: '10:05 AM', content: 'Almost done! Just tweaking the glassmorphism effects on the authentication cards. The backdrop-blur looks amazing 🎨' },
-    { id: '203', sender: 'Bob Smith', avatar: 'https://i.pravatar.cc/150?u=bob', time: '10:06 AM', content: 'Also added animated gradients to the backgrounds — really gives it that premium feel.' },
-    { id: '204', sender: 'Charlie Lee', avatar: 'https://i.pravatar.cc/150?u=charlie', time: '10:10 AM', content: 'Looks amazing so far. Great work everyone! Let\'s make sure we follow our coding standards for the PR review.' },
-    { id: '205', sender: 'Alice Nguyen', avatar: 'https://i.pravatar.cc/150?u=alice', time: '10:15 AM', content: 'Agreed! I\'ll set up the CI pipeline for automated testing this afternoon. Should we also add Storybook for component documentation?' },
-  ],
-  'c-3': [
-    { id: '301', sender: 'Bob Smith', avatar: 'https://i.pravatar.cc/150?u=bob', time: '10:05 AM', content: 'Just tweaking the glassmorphism effects on the authentication cards.' },
-    { id: '302', sender: 'Bob Smith', avatar: 'https://i.pravatar.cc/150?u=bob', time: '10:06 AM', content: 'The backdrop-blur looks amazing 🎨' },
-  ],
-  'c-4': [],
-  'c-5': [
-    { id: '501', sender: 'Charlie Lee', avatar: 'https://i.pravatar.cc/150?u=charlie', time: 'Yesterday', content: 'Great work everyone!' },
-  ],
-  'c-6': [],
-};
+import type { Conversation as UIConversation } from './components/Sidebar';
+import type { Message as UIMessage } from './components/MessageItem';
+import NewChatModal from './components/NewChatModal';
+import GroupChatModal from './components/GroupChatModal';
+import { conversationService, type Conversation as APIConversation, type Message as APIMessage } from './api/conversationService';
+import { authService } from './api/authService';
+import { realtimeService } from './api/realtimeService';
+import { userService, type User } from './api/userService';
+import { getAvatarUrl } from './utils/avatar';
 
 const Dashboard: React.FC = () => {
-  const [conversations, setConversations] = useState(INITIAL_CONVERSATIONS);
-  const [activeId, setActiveId] = useState('c-2');
-  const [messagesData, setMessagesData] = useState(INITIAL_MESSAGES);
+  const [conversations, setConversations] = useState<UIConversation[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [messagesData, setMessagesData] = useState<Record<string, UIMessage[]>>({});
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
+  const [isGroupChatModalOpen, setIsGroupChatModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const activeConv = conversations.find(c => c.id === activeId);
-  const activeMessages = messagesData[activeId] || [];
+  const activeIdRef = useRef<string | null>(null);
+  const userCacheRef = useRef<Record<string, User>>({});
+  const navigate = useNavigate();
+
+  const currentUserName = currentUser?.displayName || currentUser?.userName || localStorage.getItem('userName') || 'Bạn';
+  const currentUserAvatar = getAvatarUrl(currentUser?.avatarUrl);
+
+  useEffect(() => {
+    activeIdRef.current = activeId;
+  }, [activeId]);
+
+  const mapConversation = useCallback((conv: APIConversation): UIConversation => {
+    const userId = authService.getCurrentUserId();
+    const otherParticipant = !conv.isGroup
+      ? conv.participants?.find((participant) => participant.userId !== userId)
+      : null;
+
+    const name = conv.name || otherParticipant?.user?.displayName || otherParticipant?.user?.userName || 'Cuộc trò chuyện';
+    const avatar = conv.isGroup ? '' : getAvatarUrl(otherParticipant?.user?.avatarUrl);
+    const lastMsg = conv.lastMessage || (conv.messages && conv.messages.length > 0
+      ? conv.messages[conv.messages.length - 1]
+      : null);
+
+    conv.participants?.forEach((participant) => {
+      if (participant.user) {
+        userCacheRef.current[participant.userId] = participant.user;
+      }
+    });
+
+    return {
+      id: conv.id,
+      name,
+      avatar,
+      lastMessage: lastMsg ? lastMsg.content : 'Chưa có tin nhắn',
+      time: lastMsg ? new Date(lastMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+      rawDate: lastMsg ? lastMsg.createdAt : conv.updatedAt || conv.createdAt,
+      unread: 0,
+      isGroup: conv.isGroup,
+      status: 'offline',
+    };
+  }, []);
+
+  const resolveSender = useCallback(async (message: APIMessage, currentUserId: string | null) => {
+    if (message.senderId === currentUserId) {
+      return {
+        name: 'Bạn',
+        avatar: currentUserAvatar,
+      };
+    }
+
+    if (message.sender?.displayName || message.sender?.userName) {
+      return {
+        name: message.sender.displayName || message.sender.userName,
+        avatar: getAvatarUrl(message.sender.avatarUrl),
+      };
+    }
+
+    const cachedUser = userCacheRef.current[message.senderId];
+    if (cachedUser) {
+      return {
+        name: cachedUser.displayName || cachedUser.userName,
+        avatar: getAvatarUrl(cachedUser.avatarUrl),
+      };
+    }
+
+    try {
+      const user = await userService.getUserById(message.senderId);
+      userCacheRef.current[message.senderId] = user;
+      return {
+        name: user.displayName || user.userName,
+        avatar: getAvatarUrl(user.avatarUrl),
+      };
+    } catch (err) {
+      console.error('Failed to resolve message sender:', err);
+      return {
+        name: 'Người dùng',
+        avatar: getAvatarUrl(),
+      };
+    }
+  }, [currentUserAvatar]);
+
+  const mapApiMessage = useCallback(async (message: APIMessage): Promise<UIMessage> => {
+    const currentUserId = authService.getCurrentUserId();
+    const sender = await resolveSender(message, currentUserId);
+
+    return {
+      id: message.id,
+      sender: sender.name,
+      senderId: message.senderId,
+      avatar: sender.avatar,
+      time: new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      content: message.content,
+      rawDate: message.createdAt,
+    };
+  }, [resolveSender]);
+
+  const prefetchConversationPreviews = useCallback(async (conversationIds: string[]) => {
+    const uniqueIds = Array.from(new Set(conversationIds));
+
+    await Promise.allSettled(uniqueIds.map(async (conversationId) => {
+      const messages = await conversationService.getConversationMessages(conversationId, 1, 50);
+      if (messages.length === 0) return;
+
+      const mappedMessages = await Promise.all(messages.map(mapApiMessage));
+      const sortedMessages = mappedMessages.sort((a, b) => new Date(a.rawDate!).getTime() - new Date(b.rawDate!).getTime());
+
+      setMessagesData((prev) => {
+        if (prev[conversationId]?.length > 0) return prev;
+
+        return {
+          ...prev,
+          [conversationId]: sortedMessages,
+        };
+      });
+    }));
+  }, [mapApiMessage]);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const userId = authService.getCurrentUserId();
+      if (!userId) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const user = await userService.getUserById(userId);
+        userCacheRef.current[userId] = user;
+        setCurrentUser(user);
+        if (user.userName) {
+          localStorage.setItem('userName', user.userName);
+        }
+      } catch (err) {
+        console.error('Failed to load current user:', err);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      const userId = authService.getCurrentUserId();
+      if (!userId) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const data = await conversationService.getConversations(userId);
+        const mapped = data.map(mapConversation);
+        const sorted = mapped.sort((a, b) => {
+          const dateA = a.rawDate ? new Date(a.rawDate).getTime() : 0;
+          const dateB = b.rawDate ? new Date(b.rawDate).getTime() : 0;
+          return dateB - dateA;
+        });
+        setConversations(sorted);
+        if (sorted.length > 0 && !activeId) {
+          setActiveId(sorted[0].id);
+        }
+        void prefetchConversationPreviews(sorted.map((conversation) => conversation.id));
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Không thể tải danh sách trò chuyện.';
+        setError(message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, [activeId, mapConversation, navigate, prefetchConversationPreviews, refreshTrigger]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!activeId) return;
+
+      setIsMessagesLoading(true);
+      try {
+        const messages = await conversationService.getConversationMessages(activeId);
+        const mappedMessages = await Promise.all(messages.map(mapApiMessage));
+        const sortedMessages = mappedMessages.sort((a, b) => new Date(a.rawDate!).getTime() - new Date(b.rawDate!).getTime());
+
+        setMessagesData((prev) => ({
+          ...prev,
+          [activeId]: sortedMessages,
+        }));
+      } catch (err) {
+        console.error('Failed to load messages:', err);
+      } finally {
+        setIsMessagesLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [activeId, mapApiMessage]);
+
+  const handleIncomingMessage = useCallback(async (message: APIMessage) => {
+    const mappedMessage = await mapApiMessage(message);
+    const isActiveConversation = activeIdRef.current === message.conversationId;
+    let conversationExists = false;
+
+    setMessagesData((prev) => {
+      const currentMessages = prev[message.conversationId] || [];
+      if (currentMessages.some((item) => item.id === mappedMessage.id)) {
+        return prev;
+      }
+
+      const tempIndex = currentMessages.findIndex((item) => (
+        item.id.startsWith('temp-')
+        && item.senderId === mappedMessage.senderId
+        && item.content === mappedMessage.content
+      ));
+
+      const nextMessages = tempIndex >= 0
+        ? currentMessages.map((item, index) => (index === tempIndex ? mappedMessage : item))
+        : [...currentMessages, mappedMessage];
+
+      return {
+        ...prev,
+        [message.conversationId]: nextMessages.sort((a, b) => new Date(a.rawDate!).getTime() - new Date(b.rawDate!).getTime()),
+      };
+    });
+
+    setConversations((prev) => {
+      const next = prev.map((conversation) => {
+        if (conversation.id !== message.conversationId) return conversation;
+        conversationExists = true;
+
+        const currentUserId = authService.getCurrentUserId();
+        const prefix = message.senderId === currentUserId ? 'Bạn: ' : '';
+
+        return {
+          ...conversation,
+          lastMessage: `${prefix}${message.content}`,
+          time: mappedMessage.time,
+          rawDate: message.createdAt,
+          unread: isActiveConversation ? conversation.unread : conversation.unread + 1,
+        };
+      });
+
+      return next.sort((a, b) => {
+        const dateA = a.rawDate ? new Date(a.rawDate).getTime() : 0;
+        const dateB = b.rawDate ? new Date(b.rawDate).getTime() : 0;
+        return dateB - dateA;
+      });
+    });
+
+    if (!conversationExists) {
+      setRefreshTrigger((prev) => prev + 1);
+    }
+  }, [mapApiMessage]);
+
+  useEffect(() => {
+    const connectRealtime = async () => {
+      try {
+        realtimeService.onReceiveMessage((message) => {
+          void handleIncomingMessage(message);
+        });
+        await realtimeService.start();
+      } catch (err) {
+        console.error('Failed to connect realtime chat:', err);
+      }
+    };
+
+    connectRealtime();
+
+    return () => {
+      void realtimeService.stop();
+    };
+  }, [handleIncomingMessage]);
+
+  useEffect(() => {
+    if (!activeId) return;
+
+    realtimeService.joinConversation(activeId).catch((err) => {
+      console.error('Failed to join conversation:', err);
+    });
+
+    return () => {
+      realtimeService.leaveConversation(activeId).catch((err) => {
+        console.error('Failed to leave conversation:', err);
+      });
+    };
+  }, [activeId]);
+
+  const handleChatCreated = useCallback((id: string) => {
+    setActiveId(id);
+    setRefreshTrigger((prev) => prev + 1);
+  }, []);
+
+  const conversationsWithMessagePreview = useMemo(() => {
+    const currentUserId = authService.getCurrentUserId();
+
+    return conversations
+      .map((conversation) => {
+        const cachedMessages = messagesData[conversation.id];
+        const lastCachedMessage = cachedMessages?.[cachedMessages.length - 1];
+
+        if (!lastCachedMessage) return conversation;
+
+        const prefix = lastCachedMessage.senderId === currentUserId ? 'Bạn: ' : '';
+
+        return {
+          ...conversation,
+          lastMessage: `${prefix}${lastCachedMessage.content}`,
+          time: lastCachedMessage.time,
+          rawDate: lastCachedMessage.rawDate || conversation.rawDate,
+        };
+      })
+      .sort((a, b) => {
+        const dateA = a.rawDate ? new Date(a.rawDate).getTime() : 0;
+        const dateB = b.rawDate ? new Date(b.rawDate).getTime() : 0;
+        return dateB - dateA;
+      });
+  }, [conversations, messagesData]);
+
+  const activeConv = conversationsWithMessagePreview.find((conversation) => conversation.id === activeId);
+  const activeMessages = activeId ? messagesData[activeId] || [] : [];
 
   const handleConversationSelect = useCallback((id: string) => {
     setActiveId(id);
-    setConversations(prev => prev.map(c => c.id === id ? { ...c, unread: 0 } : c));
+    setConversations((prev) => prev.map((conversation) => (
+      conversation.id === id ? { ...conversation, unread: 0 } : conversation
+    )));
     setSidebarOpen(false);
   }, []);
 
-  const handleSendMessage = useCallback((content: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      sender: 'John Doe',
-      avatar: 'https://i.pravatar.cc/150?u=current',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  const handleSendMessage = useCallback(async (content: string) => {
+    if (!activeId) return;
+
+    const userId = authService.getCurrentUserId();
+    if (!userId) return;
+
+    const now = new Date();
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMsg: UIMessage = {
+      id: tempId,
+      sender: currentUserName,
+      senderId: userId,
+      avatar: currentUserAvatar,
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       content,
+      rawDate: now.toISOString(),
     };
 
-    setMessagesData(prev => ({
+    setMessagesData((prev) => ({
       ...prev,
-      [activeId]: [...(prev[activeId] || []), newMessage],
+      [activeId]: [...(prev[activeId] || []), optimisticMsg],
     }));
 
-    // Update last message in conversation list
-    setConversations(prev => prev.map(c =>
-      c.id === activeId ? { ...c, lastMessage: `You: ${content}`, time: newMessage.time } : c
-    ));
-  }, [activeId]);
+    setConversations((prev) => prev.map((conversation) => (
+      conversation.id === activeId
+        ? {
+            ...conversation,
+            lastMessage: `Bạn: ${content}`,
+            time: optimisticMsg.time,
+            rawDate: optimisticMsg.rawDate,
+          }
+        : conversation
+    )));
+
+    try {
+      const realMsg = await conversationService.sendMessage(activeId, userId, content);
+
+      setMessagesData((prev) => {
+        const currentMessages = prev[activeId] || [];
+        const realMessageAlreadyExists = currentMessages.some((message) => message.id === realMsg.id);
+        return {
+          ...prev,
+          [activeId]: realMessageAlreadyExists
+            ? currentMessages.filter((message) => message.id !== tempId)
+            : currentMessages.map((message) => (
+                message.id === tempId
+                  ? {
+                      ...message,
+                      id: realMsg.id,
+                      senderId: realMsg.senderId,
+                      time: new Date(realMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                      rawDate: realMsg.createdAt,
+                    }
+                  : message
+              )),
+        };
+      });
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
+  }, [activeId, currentUserAvatar, currentUserName]);
 
   const handleToggleSidebar = useCallback(() => {
-    setSidebarOpen(prev => !prev);
+    setSidebarOpen((prev) => !prev);
   }, []);
 
   return (
-    <div className="flex flex-col h-full w-full bg-background overflow-hidden">
-      <Navbar onToggleSidebar={handleToggleSidebar} />
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-[linear-gradient(135deg,#fff8fb_0%,#f1fbff_48%,#fff6de_100%)] text-[#3b3340] dark:bg-[linear-gradient(135deg,#211922_0%,#182b32_50%,#2b2418_100%)] dark:text-[#fff4f8]">
+      <Navbar onToggleSidebar={handleToggleSidebar} currentUserAvatar={currentUserAvatar} />
+      <div className="flex flex-1 min-h-0 overflow-hidden p-0 xl:p-4 xl:gap-4">
         <Sidebar
-          conversations={conversations}
-          activeConversationId={activeId}
+          conversations={conversationsWithMessagePreview}
+          activeConversationId={activeId || ''}
           onConversationSelect={handleConversationSelect}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
+          onOpenNewChat={() => setIsNewChatModalOpen(true)}
+          onOpenGroupChat={() => setIsGroupChatModalOpen(true)}
+          currentUserName={currentUserName}
+          currentUserAvatar={currentUserAvatar}
         />
-        <ChatArea
-          conversationName={activeConv?.name || ''}
-          conversationAvatar={activeConv?.avatar}
-          isGroup={activeConv?.isGroup}
-          status={activeConv?.status}
-          messages={activeMessages}
-          onSendMessage={handleSendMessage}
-        />
+        {isLoading ? (
+          <div className="flex-1 flex items-center justify-center bg-white/65 xl:rounded-[28px] border border-white/70 shadow-[0_18px_50px_rgba(238,128,166,0.12)] dark:bg-[#241d28]/72 dark:border-[#5a3c4b] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+            <div className="flex flex-col items-center gap-3">
+              <span className="w-10 h-10 border-4 border-[#ffd9e5] border-t-[#ff7fa3] rounded-full animate-spin"></span>
+              <p className="font-body-md text-[#806f79] dark:text-[#d8bdca]">Đang mở những cuộc trò chuyện...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex-1 flex items-center justify-center bg-white/65 xl:rounded-[28px] border border-white/70 px-4 text-center shadow-[0_18px_50px_rgba(238,128,166,0.12)] dark:bg-[#241d28]/72 dark:border-[#5a3c4b] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+            <div className="max-w-sm">
+              <span className="material-symbols-outlined text-[#fb7185] text-4xl mb-2">error</span>
+              <p className="font-body-lg text-[#47313d] mb-4 dark:text-[#fff4f8]">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-[#ff7fa3] text-white rounded-2xl font-bold hover:bg-[#f06593] shadow-[0_14px_30px_rgba(255,127,163,0.28)]"
+              >
+                Thử lại
+              </button>
+            </div>
+          </div>
+        ) : !activeId ? (
+          <div className="flex-1 flex items-center justify-center bg-white/65 xl:rounded-[28px] border border-white/70 text-center shadow-[0_18px_50px_rgba(238,128,166,0.12)] dark:bg-[#241d28]/72 dark:border-[#5a3c4b] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+            <div>
+              <div className="w-20 h-20 mx-auto bg-[#ffd9e5] rounded-[28px] flex items-center justify-center mb-4 text-[#d94676] dark:bg-[#4a2f3c] dark:text-[#ffb3c9]">
+                <span className="material-symbols-outlined text-5xl">chat_bubble</span>
+              </div>
+              <h3 className="font-h2 text-[#47313d] mb-2 dark:text-[#fff4f8]">Chưa có cuộc trò chuyện</h3>
+              <p className="font-body-md text-[#806f79] dark:text-[#d8bdca]">Tạo chat mới để bắt đầu kết nối nhé.</p>
+            </div>
+          </div>
+        ) : (
+          <ChatArea
+            conversationName={activeConv?.name || ''}
+            conversationAvatar={activeConv?.avatar}
+            isGroup={activeConv?.isGroup}
+            status={activeConv?.status}
+            messages={activeMessages}
+            isLoading={isMessagesLoading}
+            onSendMessage={handleSendMessage}
+          />
+        )}
       </div>
+
+      <NewChatModal
+        isOpen={isNewChatModalOpen}
+        onClose={() => setIsNewChatModalOpen(false)}
+        onChatCreated={handleChatCreated}
+      />
+
+      <GroupChatModal
+        isOpen={isGroupChatModalOpen}
+        onClose={() => setIsGroupChatModalOpen(false)}
+        onChatCreated={handleChatCreated}
+      />
     </div>
   );
 };
