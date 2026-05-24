@@ -50,4 +50,11 @@ export const realtimeService = {
       await hub.invoke('LeaveConversation', conversationId);
     }
   },
+
+  heartbeat: async () => {
+    const hub = getConnection();
+    if (hub.state === signalR.HubConnectionState.Connected) {
+      await hub.invoke('Heartbeat');
+    }
+  },
 };

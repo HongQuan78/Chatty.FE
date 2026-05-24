@@ -68,6 +68,39 @@ const Dashboard: React.FC = () => {
     };
   }, []);
 
+  const refreshConversationPresence = useCallback(async (apiConversations: APIConversation[]) => {
+    const currentUserId = authService.getCurrentUserId();
+    if (!currentUserId) return;
+
+    const statusResults = await Promise.allSettled(apiConversations.map(async (conversation) => {
+      if (conversation.isGroup) return null;
+
+      const otherParticipant = conversation.participants?.find((participant) => participant.userId !== currentUserId);
+      if (!otherParticipant) return null;
+
+      const presence = await userService.getUserPresence(otherParticipant.userId);
+      return {
+        conversationId: conversation.id,
+        status: presence.isOnline ? 'online' : 'offline',
+      } as const;
+    }));
+
+    const statusMap = new Map<string, 'online' | 'offline'>();
+    statusResults.forEach((result) => {
+      if (result.status === 'fulfilled' && result.value) {
+        statusMap.set(result.value.conversationId, result.value.status);
+      }
+    });
+
+    if (statusMap.size === 0) return;
+
+    setConversations((prev) => prev.map((conversation) => (
+      statusMap.has(conversation.id)
+        ? { ...conversation, status: statusMap.get(conversation.id) }
+        : conversation
+    )));
+  }, []);
+
   const resolveSender = useCallback(async (message: APIMessage, currentUserId: string | null) => {
     if (message.senderId === currentUserId) {
       return {
@@ -186,6 +219,7 @@ const Dashboard: React.FC = () => {
         if (sorted.length > 0 && !activeId) {
           setActiveId(sorted[0].id);
         }
+        void refreshConversationPresence(data);
         void prefetchConversationPreviews(sorted.map((conversation) => conversation.id));
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Không thể tải danh sách trò chuyện.';
@@ -196,7 +230,7 @@ const Dashboard: React.FC = () => {
     };
 
     fetchConversations();
-  }, [activeId, mapConversation, navigate, prefetchConversationPreviews, refreshTrigger]);
+  }, [activeId, mapConversation, navigate, prefetchConversationPreviews, refreshConversationPresence, refreshTrigger]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -285,17 +319,53 @@ const Dashboard: React.FC = () => {
           void handleIncomingMessage(message);
         });
         await realtimeService.start();
+        void realtimeService.heartbeat();
       } catch (err) {
         console.error('Failed to connect realtime chat:', err);
       }
     };
 
     connectRealtime();
+    const heartbeatInterval = window.setInterval(() => {
+      void realtimeService.heartbeat();
+    }, 30000);
 
     return () => {
+      window.clearInterval(heartbeatInterval);
       void realtimeService.stop();
     };
   }, [handleIncomingMessage]);
+
+  useEffect(() => {
+    if (isLoading || conversations.length === 0) return;
+
+    const refreshPresence = async () => {
+      const userId = authService.getCurrentUserId();
+      if (!userId) return;
+
+      try {
+        const data = await conversationService.getConversations(userId);
+        data.forEach((conversation) => {
+          conversation.participants?.forEach((participant) => {
+            if (participant.user) {
+              userCacheRef.current[participant.userId] = participant.user;
+            }
+          });
+        });
+        await refreshConversationPresence(data);
+      } catch (err) {
+        console.error('Failed to refresh presence:', err);
+      }
+    };
+
+    const presenceInterval = window.setInterval(() => {
+      void refreshPresence();
+    }, 30000);
+
+    void refreshPresence();
+
+    return () => window.clearInterval(presenceInterval);
+  }, [conversations.length, isLoading, refreshConversationPresence]);
 
   useEffect(() => {
     if (!activeId) return;

@@ -11,6 +11,13 @@ export interface User {
   bio?: string | null;
 }
 
+export interface UserPresence {
+  userId: string;
+  isOnline: boolean;
+  lastActiveUtc?: string | null;
+  offlineMinutes?: number | null;
+}
+
 interface PagedList<T> {
   items: T[];
   totalCount: number;
@@ -49,5 +56,18 @@ export const userService = {
 
     const result = (await response.json()) as User[] | PagedList<User>;
     return Array.isArray(result) ? result : result.items ?? [];
+  },
+
+  getUserPresence: async (id: string): Promise<UserPresence> => {
+    const response = await authService.authFetch(`${API_BASE_URL}/Users/${id}/presence`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || errorData.detail || 'Failed to fetch user presence');
+    }
+
+    return response.json();
   },
 };
