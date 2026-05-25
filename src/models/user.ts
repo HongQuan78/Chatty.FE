@@ -13,3 +13,13 @@ export interface UserPresence {
   lastActiveUtc?: string | null;
   offlineMinutes?: number | null;
 }
+
+export interface UpdateProfileRequest {
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  bio?: string | null;
+}
+
+export interface UploadFileResponse {
+  fileUrl: string;
+}

@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from './api/authService';
 import { userService } from './api/userService';
 import { useTheme } from './contexts/ThemeContext';
+import AvatarCropModal from './components/AvatarCropModal';
 import { DEFAULT_AVATAR_URL, getAvatarUrl } from './utils/avatar';
 
 type SettingsTab = 'profile' | 'account' | 'appearance' | 'notifications';
@@ -96,8 +97,12 @@ const Settings: React.FC = () => {
   const palette = resolvedTheme === 'Dark' ? darkPalette : lightPalette;
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
+  const [avatarCrop, setAvatarCrop] = useState<{ imageUrl: string; fileName: string } | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     displayName: localStorage.getItem('userName') || 'Bạn',
     email: '',
@@ -108,6 +113,14 @@ const Settings: React.FC = () => {
   const avatarSrc = useMemo(() => {
     return getAvatarUrl(profileForm.avatarUrl);
   }, [profileForm.avatarUrl]);
+
+  useEffect(() => {
+    return () => {
+      if (avatarCrop?.imageUrl) {
+        URL.revokeObjectURL(avatarCrop.imageUrl);
+      }
+    };
+  }, [avatarCrop?.imageUrl]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -144,12 +157,117 @@ const Settings: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setProfileForm((prev) => ({ ...prev, [field]: e.target.value }));
+    setProfileSuccess(null);
+  };
+
+  const applyProfileResponse = (user: Awaited<ReturnType<typeof userService.getUserById>>, fallbackAvatarUrl?: string) => {
+    setProfileForm((prev) => ({
+      displayName: user.displayName || user.userName || prev.displayName,
+      email: user.email || prev.email,
+      bio: user.bio || '',
+      avatarUrl: user.avatarUrl || fallbackAvatarUrl || '',
+    }));
+    if (user.userName) localStorage.setItem('userName', user.userName);
+  };
+
+  const saveProfile = async () => {
+    const userId = authService.getCurrentUserId();
+    if (!userId) {
+      navigate('/login');
+      return;
+    }
+
+    setIsSaving(true);
+    setProfileError(null);
+    setProfileSuccess(null);
+
+    try {
+      const updatedUser = await userService.updateProfile(userId, {
+        displayName: profileForm.displayName.trim() || null,
+        avatarUrl: profileForm.avatarUrl.trim() || null,
+        bio: profileForm.bio.trim() || null,
+      });
+      applyProfileResponse(updatedUser);
+      setProfileSuccess('Đã lưu hồ sơ của bạn.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Không thể lưu hồ sơ.';
+      setProfileError(message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
-    setTimeout(() => setIsSaving(false), 900);
+    void saveProfile();
+  };
+
+  const handleAvatarButtonClick = () => {
+    if (!isProfileLoading && !isUploadingAvatar) {
+      avatarInputRef.current?.click();
+    }
+  };
+
+  const closeAvatarCrop = () => {
+    setAvatarCrop((current) => {
+      if (current?.imageUrl) {
+        URL.revokeObjectURL(current.imageUrl);
+      }
+      return null;
+    });
+  };
+
+  const uploadAvatar = async (file: File) => {
+    const userId = authService.getCurrentUserId();
+    if (!userId) {
+      navigate('/login');
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    setProfileError(null);
+    setProfileSuccess(null);
+
+    try {
+      const { fileUrl } = await userService.uploadFile(file);
+      const updatedUser = await userService.updateProfile(userId, {
+        displayName: profileForm.displayName.trim() || null,
+        avatarUrl: fileUrl,
+        bio: profileForm.bio.trim() || null,
+      });
+      applyProfileResponse(updatedUser, fileUrl);
+      setProfileSuccess('Đã cập nhật avatar mới.');
+      closeAvatarCrop();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Không thể cập nhật avatar.';
+      setProfileError(message);
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setProfileError('Vui lòng chọn một file ảnh hợp lệ.');
+      setProfileSuccess(null);
+      return;
+    }
+
+    if (avatarCrop?.imageUrl) {
+      URL.revokeObjectURL(avatarCrop.imageUrl);
+    }
+
+    setAvatarCrop({
+      imageUrl: URL.createObjectURL(file),
+      fileName: file.name,
+    });
+    setProfileError(null);
+    setProfileSuccess(null);
   };
 
   const panelStyle: React.CSSProperties = {
@@ -172,6 +290,7 @@ const Settings: React.FC = () => {
   };
 
   return (
+    <>
     <div className="flex h-screen w-full flex-col overflow-hidden" style={{ background: palette.page, color: palette.text }}>
       <header className="h-16 flex items-center justify-between px-4 sm:px-5 flex-shrink-0 z-30 border-b backdrop-blur-xl" style={panelStyle}>
         <div className="flex items-center gap-3">
@@ -193,7 +312,7 @@ const Settings: React.FC = () => {
         </div>
         <button
           type="button"
-          onClick={handleSave}
+          onClick={() => void saveProfile()}
           disabled={isSaving}
           className="hidden sm:flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-bold text-white shadow-[0_12px_24px_rgba(255,127,163,0.28)] transition disabled:cursor-not-allowed disabled:opacity-70"
           style={{ background: palette.accent }}
@@ -272,11 +391,25 @@ const Settings: React.FC = () => {
                 </div>
               )}
 
+              {profileSuccess && (
+                <div className="mb-5 flex items-center gap-2 rounded-2xl border p-3 text-sm font-semibold" style={{ background: palette.blueSoft, borderColor: palette.border, color: palette.blueText }}>
+                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                  {profileSuccess}
+                </div>
+              )}
+
               <form onSubmit={handleSave} className="space-y-5">
                 <div className="rounded-[28px] border p-5 shadow-sm" style={cardStyle}>
                   <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
                     <div className="relative w-fit">
-                      {isProfileLoading ? (
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/bmp,image/tiff"
+                        className="sr-only"
+                        onChange={handleAvatarChange}
+                      />
+                      {isProfileLoading || isUploadingAvatar ? (
                         <div className="flex h-24 w-24 items-center justify-center rounded-[30px] ring-4" style={{ background: palette.accentSoft, borderColor: palette.border }}>
                           <span className="h-8 w-8 animate-spin rounded-full border-4 border-white/60" style={{ borderTopColor: palette.accent }}></span>
                         </div>
@@ -293,11 +426,13 @@ const Settings: React.FC = () => {
                       )}
                       <button
                         type="button"
-                        className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-[0_10px_20px_rgba(255,127,163,0.28)] transition focus-visible:ring-4 outline-none"
+                        onClick={handleAvatarButtonClick}
+                        disabled={isProfileLoading || isUploadingAvatar}
+                        className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-[0_10px_20px_rgba(255,127,163,0.28)] transition focus-visible:ring-4 outline-none disabled:cursor-not-allowed disabled:opacity-70"
                         style={{ background: palette.accent }}
                         aria-label="Đổi ảnh đại diện"
                       >
-                        <span className="material-symbols-outlined text-[20px]">photo_camera</span>
+                        <span className="material-symbols-outlined text-[20px]">{isUploadingAvatar ? 'progress_activity' : 'photo_camera'}</span>
                       </button>
                     </div>
                     <div>
@@ -307,10 +442,12 @@ const Settings: React.FC = () => {
                       </p>
                       <button
                         type="button"
-                        className="mt-3 rounded-2xl px-4 py-2 text-sm font-bold transition"
+                        onClick={handleAvatarButtonClick}
+                        disabled={isProfileLoading || isUploadingAvatar}
+                        className="mt-3 rounded-2xl px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-70"
                         style={{ background: palette.blueSoft, color: palette.blueText }}
                       >
-                        Tải ảnh mới
+                        {isUploadingAvatar ? 'Đang tải ảnh...' : 'Tải ảnh mới'}
                       </button>
                     </div>
                   </div>
@@ -487,6 +624,16 @@ const Settings: React.FC = () => {
         </main>
       </div>
     </div>
+    {avatarCrop && (
+      <AvatarCropModal
+        imageUrl={avatarCrop.imageUrl}
+        fileName={avatarCrop.fileName}
+        isSaving={isUploadingAvatar}
+        onCancel={closeAvatarCrop}
+        onCrop={(file) => void uploadAvatar(file)}
+      />
+    )}
+    </>
   );
 };
 
