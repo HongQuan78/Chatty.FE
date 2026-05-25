@@ -1,48 +1,8 @@
 import { authService } from './authService';
+import { env } from '../config/env';
+import type { Conversation, Message } from '../models';
 
-const API_BASE_URL = '/api';
-
-export interface User {
-  id: string;
-  userName: string;
-  email: string;
-  displayName?: string | null;
-  avatarUrl?: string | null;
-}
-
-export interface Message {
-  id: string;
-  content: string;
-  createdAt: string;
-  senderId: string;
-  conversationId: string;
-  sender?: {
-    id: string;
-    userName: string;
-    displayName: string | null;
-    avatarUrl: string | null;
-  };
-}
-
-export interface Participant {
-  id: string;
-  userId: string;
-  conversationId: string;
-  user?: User;
-}
-
-export interface Conversation {
-  id: string;
-  name: string;
-  isGroup: boolean;
-  createdAt: string;
-  updatedAt: string;
-  ownerId: string;
-  owner?: User;
-  participants?: Participant[];
-  messages?: Message[];
-  lastMessage?: Message | null;
-}
+const API_BASE_URL = env.apiBaseUrl;
 
 export const conversationService = {
 

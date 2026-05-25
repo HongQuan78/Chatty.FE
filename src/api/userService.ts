@@ -1,32 +1,8 @@
 import { authService } from './authService';
+import { env } from '../config/env';
+import type { PagedList, User, UserPresence } from '../models';
 
-const API_BASE_URL = '/api';
-
-export interface User {
-  id: string;
-  userName: string;
-  email: string;
-  displayName?: string | null;
-  avatarUrl?: string | null;
-  bio?: string | null;
-}
-
-export interface UserPresence {
-  userId: string;
-  isOnline: boolean;
-  lastActiveUtc?: string | null;
-  offlineMinutes?: number | null;
-}
-
-interface PagedList<T> {
-  items: T[];
-  totalCount: number;
-  pageIndex: number;
-  pageSize: number;
-  totalPages: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-}
+const API_BASE_URL = env.apiBaseUrl;
 
 export const userService = {
   getUserById: async (id: string): Promise<User> => {

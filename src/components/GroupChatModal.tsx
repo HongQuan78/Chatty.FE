@@ -1,8 +1,9 @@
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { authService } from '../api/authService';
 import { conversationService } from '../api/conversationService';
-import { userService, type User } from '../api/userService';
+import { userService } from '../api/userService';
 import { DEFAULT_AVATAR_URL, getAvatarUrl } from '../utils/avatar';
+import type { User } from '../models';
 
 interface GroupChatModalProps {
   isOpen: boolean;

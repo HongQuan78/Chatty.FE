@@ -1,55 +1,8 @@
-const API_BASE_URL = '/api';
+import { env } from '../config/env';
+import { getErrorMessage } from './apiError';
+import type { AuthResponse, LoginRequest, RegisterRequest } from '../models';
 
-export interface RegisterRequest {
-  userName: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  token?: string;
-  accessToken?: string;
-  expiresIn?: number;
-  refreshToken?: string;
-  refreshExpiresIn?: number;
-  userId?: string;
-  userName?: string;
-  message?: string;
-  error?: string;
-  errors?: string[];
-}
-
-type ApiErrorShape = {
-  error?: string;
-  message?: string;
-  title?: string;
-  detail?: string;
-  errors?: Record<string, string[]> | string[];
-};
-
-const getErrorMessage = (errorData: ApiErrorShape, fallback: string) => {
-  if (errorData.error) return errorData.error;
-  if (errorData.message) return errorData.message;
-  if (errorData.detail) return errorData.detail;
-
-  if (Array.isArray(errorData.errors) && errorData.errors.length > 0) {
-    return errorData.errors.join(' ');
-  }
-
-  if (errorData.errors && !Array.isArray(errorData.errors)) {
-    const validationMessages = Object.values(errorData.errors).flat();
-    if (validationMessages.length > 0) {
-      return validationMessages.join(' ');
-    }
-  }
-
-  return errorData.title || fallback;
-};
+const API_BASE_URL = env.apiBaseUrl;
 
 const storeAuthSession = (result: AuthResponse) => {
   const token = result.token || result.accessToken;

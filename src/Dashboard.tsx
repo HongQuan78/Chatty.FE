@@ -7,11 +7,12 @@ import type { Conversation as UIConversation } from './components/Sidebar';
 import type { Message as UIMessage } from './components/MessageItem';
 import NewChatModal from './components/NewChatModal';
 import GroupChatModal from './components/GroupChatModal';
-import { conversationService, type Conversation as APIConversation, type Message as APIMessage } from './api/conversationService';
+import { conversationService } from './api/conversationService';
 import { authService } from './api/authService';
 import { realtimeService } from './api/realtimeService';
-import { userService, type User } from './api/userService';
+import { userService } from './api/userService';
 import { getAvatarUrl } from './utils/avatar';
+import type { Conversation as APIConversation, Message as APIMessage, User } from './models';
 
 const Dashboard: React.FC = () => {
   const [conversations, setConversations] = useState<UIConversation[]>([]);

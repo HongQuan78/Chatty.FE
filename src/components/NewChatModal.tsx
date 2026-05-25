@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useDeferredValue } from 'react';
-import { userService, type User } from '../api/userService';
+import { userService } from '../api/userService';
 import { conversationService } from '../api/conversationService';
 import { authService } from '../api/authService';
+import type { User } from '../models';
 
 interface NewChatModalProps {
   isOpen: boolean;

@@ -1,13 +1,14 @@
 import * as signalR from '@microsoft/signalr';
 import { authService } from './authService';
-import type { Message } from './conversationService';
+import { env } from '../config/env';
+import type { Message } from '../models';
 
 let connection: signalR.HubConnection | null = null;
 
 const getConnection = () => {
   if (!connection) {
     connection = new signalR.HubConnectionBuilder()
-      .withUrl('/hubs/chat', {
+      .withUrl(env.signalRHubUrl, {
         accessTokenFactory: () => authService.getAccessToken(),
       })
       .withAutomaticReconnect()
